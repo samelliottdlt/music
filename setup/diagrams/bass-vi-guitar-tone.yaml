@@ -1,0 +1,55 @@
+# Bass VI tone recipe: less bass, more guitar. One knob/switch per stage along the chain
+# (bass → Chroma Console → Micro Terror → TX-6), drawn on the official drawings.
+# The full write-up with citations is in gear/bass-vi.md ("Getting a guitar-like tone").
+#
+# Render it (PNG goes to out/visuals/, gitignored; never commit it, the drawings are the vendors'):
+#   uv run .github/skills/music-setup/scripts/diagram.py setup/diagrams/bass-vi-guitar-tone.yaml
+title: "Bass VI: less bass, more guitar"
+subtitle: Work left to right and change one thing at a time; every step trims low end or adds bite.
+nodes:
+  - id: bass
+    label: 1  Bass VI
+    note: "low cut (strangle) switch: ON\n(circled: the \"tone modification switch\")\nmute: off · tone knob: all the way up\ntry each pickup alone, keep the brightest"
+    col: 0
+    row: 0
+    height: 250
+    image: {manual: fender-bass-vi-1962, page: 8, box: [0.44, 0.035, 0.975, 0.56]}
+    highlights:
+      # no label on the low cut switch: a label would hide the volume knob, and the drawing names it
+      - {box: [0.505, 0.225, 0.555, 0.292], shape: circle}
+      - {box: [0.764, 0.346, 0.824, 0.446], label: tone up, shape: circle}
+      - {box: [0.572, 0.535, 0.707, 0.756], label: mute off}
+  - id: chroma
+    label: 2  Chroma Console
+    note: "D → Filter (red light): AMOUNT right of center cuts lows\nA → Sweeten (orange) or Drive (red): TILT toward BRIGHT\nMIX: full (100% effected)\noptional, B → Pitch (purple): RATE full right = +1 octave"
+    col: 1
+    row: 0
+    height: 300
+    image: {manual: chroma-console-manual, page: 6, box: [0.14, 0.258, 0.622, 0.585]}
+    highlights:
+      - {box: [0.058, 0.095, 0.191, 0.26], label: brighter, shape: circle}
+      - {box: [0.807, 0.095, 0.94, 0.26], label: full, shape: circle}
+      - {box: [0.807, 0.364, 0.94, 0.529], label: cut lows, shape: circle}
+  - id: amp
+    label: 3  Orange Micro Terror
+    note: "TONE: clockwise = brighter\nGAIN: up a little for crunch\n(GAIN at zero = no sound)"
+    col: 2
+    row: 0
+  - id: tx6
+    label: 4  TX-6, the amp's channel
+    note: "white knob (LOW): turn down\nblue knob (HIGH): up a little\n±18 dB per band"
+    col: 3
+    row: 0
+    height: 220
+    image: {manual: tx-6-guide, page: 30, box: [0.10, 0.22, 0.76, 0.88]}
+edges:
+  - {from: bass, to: chroma, label: 1/4in → INPUT L}
+  - {from: chroma, to: amp, label: OUTPUT L → INPUT}
+  - {from: amp, to: tx6, label: "HEADPHONES →\n3.5 mm, mono"}
+sources:
+  - "Bass VI: low cut switch from Fender's Vintera III Early '60s Bass VI product page; where the switch, tone
+    control and mute are, from Fender's vintage Bass VI manual pp7–8 (Sam's reissue may differ in detail)."
+  - "Chroma Console manual: p6 (panel; start with MIX at 100%), p9 (press a button to step through its effects),
+    p11–12 (TILT, Sweeten, Drive), p14 (Pitch), p17 (Filter). Micro Terror manual p3 (TONE, GAIN).
+    TX-6 guide pp29–30 (per-channel EQ: blue = high, orange = mid, white = low)."
+  - "Trying each pickup alone and the tone knob all the way up are general guitar practice, not from the manuals."
