@@ -36,7 +36,8 @@ From the [product page](https://eu.fender.com/products/vintera-iii-early-60s-bas
 - The **low cut** ("strangle") switch takes out low end; Fender says the
   pickups go from "beefy bass tones to screaming, overdriven guitar-like
   crunch", especially with it on.
-- Master volume and tone; the tremolo has a lock button.
+- Master volume and tone; the tremolo has a lock button (see "Tremolo arm"
+  below).
 - Where they are, per the drawing in Fender's vintage Bass VI manual (Sam's
   reissue may differ in detail): the 3 pickup switches and the low cut switch
   (called the "tone modification switch" there; it works on any pickup
@@ -46,6 +47,54 @@ From the [product page](https://eu.fender.com/products/vintera-iii-early-60s-bas
 - **Mute:** built in near the bridge; it damps the strings for short,
   non-sustained notes. Press lightly on its lettered part to switch it on or
   off ([vintage manual p7](https://www.fmicassets.com/Damroot/Original/10001/leg_gtr_Bass_VI_%281962%29.pdf#page=7)).
+
+## Tremolo arm (whammy bar)
+
+Fender lists a "Vintage-Style Floating Tremolo with Tremolo Lock Button and
+Push-In Tremolo Arm"
+([product page](https://eu.fender.com/products/vintera-iii-early-60s-bass-vi)).
+Picture: `setup/diagrams/bass-vi-tremolo-arm.yaml` (render it with the
+skill's `diagram.py`).
+
+- **Finding it:** Fender ships the tremolo arm (and adjustment tools) with
+  the instruments that need one. If it's missing, ask the dealer; Fender
+  Consumer Relations sells replacement arms
+  ([Fender support](https://support.fender.com/hc/en-us/articles/42509186404251-My-dealer-did-not-give-me-my-guitar-s-tremolo-arm-warranty-card-adjustment-tools-etc-Can-you-send-me-these-items)).
+  This bass comes with a Deluxe Gig Bag
+  ([product page](https://eu.fender.com/products/vintera-iii-early-60s-bass-vi)),
+  so check that first.
+- **Fitting it** (the drawings are from Fender's vintage Bass VI manual; Sam's
+  reissue may differ in detail):
+  1. The arm goes into the round **tremolo arm sleeve** on the tremolo plate
+     (the chrome plate behind the bridge, where the strings end), on the side
+     nearest the volume and tone knobs: see the photo on
+     [p3](https://www.fmicassets.com/Damroot/Original/10001/leg_gtr_Bass_VI_%281962%29.pdf#page=3)
+     and Figure B on
+     [p5](https://www.fmicassets.com/Damroot/Original/10001/leg_gtr_Bass_VI_%281962%29.pdf#page=5).
+  2. Push it straight into the sleeve: it's a push-in arm, not a screw-in one
+     ([product page](https://eu.fender.com/products/vintera-iii-early-60s-bass-vi)).
+     Then swing the tip to wherever suits your picking hand.
+  3. Leave the **trem-lock** released for vibrato. Lock it to restring, or so
+     the other strings stay in tune if one breaks: press the arm down and
+     slide the trem-lock button toward the spring tension screw. To release
+     it, press the arm down and slide the button back
+     ([vintage manual p5](https://www.fmicassets.com/Damroot/Original/10001/leg_gtr_Bass_VI_%281962%29.pdf#page=5),
+     [p6](https://www.fmicassets.com/Damroot/Original/10001/leg_gtr_Bass_VI_%281962%29.pdf#page=6)).
+  4. To take it out (e.g. to pack the bass), the vintage manual says the arm
+     may be removed with the tremolo locked
+     ([p5](https://www.fmicassets.com/Damroot/Original/10001/leg_gtr_Bass_VI_%281962%29.pdf#page=5)).
+- **Stiffer or softer action:** the **tremolo spring tension screw** on the
+  plate sets the tension of the tremolo action. Tightening it raises the
+  strings' pitch and loosening it lowers it, so retune afterwards
+  ([vintage manual p5](https://www.fmicassets.com/Damroot/Original/10001/leg_gtr_Bass_VI_%281962%29.pdf#page=5)).
+- **Replacement arms aren't interchangeable:** Fender's "Classic Player"
+  Jaguar/Jazzmaster arm, for example, says it fits "Vintera" models but is
+  threaded (10-32)
+  ([part page](https://www.fender.com/products/classic-player-jaguar-jazzmaster-tremolo-arm-chrome)),
+  while this bass takes a push-in arm. Order by model number (0149390305)
+  through the dealer or Fender.
+- Not in Fender's docs for this model: adjusting how tightly the arm sits in
+  its sleeve. If it's floppy or won't stay in, ask the dealer or Fender.
 
 ## Using it with the rig
 
