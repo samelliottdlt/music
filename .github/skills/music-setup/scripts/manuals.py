@@ -227,6 +227,11 @@ def validate(entries: list, known_gear: set[str] | None) -> list[str]:
             for k in ("list", "image", "thumb"):
                 if not pi.get(k):
                     problems.append(f"{where}: page_images.{k} is required for image guides")
+        if e.get("page_index") is not None:
+            try:
+                page_index(e)
+            except RegistryError as x:
+                problems.append(f"{where}: page_index: {x}")
         if e.get("verified") is not None and not isinstance(e["verified"], dict):
             problems.append(f"{where}: verified must be a mapping")
     return problems
@@ -872,7 +877,53 @@ def visual_hint(entry: dict) -> str:
             else "it's a scanned PDF with no text layer")
     return (f"{entry['id']}: {what}, so there's no text search. Browse it visually: "
             f"`manuals.py sheet {entry['id']}` (numbered thumbnails), view the sheet, then "
-            f"`manuals.py page {entry['id']} N` and read the page.")
+            f"`manuals.py page {entry['id']} N` and read the page. Add what you find to the entry's "
+            f"`page_index` in gear/manuals.yaml so the next search finds it.")
+
+
+def page_index(entry: dict) -> dict[int, str]:
+    """The entry's `page_index` as {page: topics}: what's on each page of a manual with no text layer
+    (image guides, scans), so `search` can still find pages. Keys are pages or ranges like 121-130."""
+    raw = entry.get("page_index")
+    if raw is None:
+        return {}
+    if not isinstance(raw, dict) or not raw:
+        raise RegistryError("must map pages (or ranges like 121-130) to what's on them")
+    total = int((entry.get("verified") or {}).get("pages") or 9999)
+    index: dict[int, str] = {}
+    for key, topics in raw.items():
+        if not isinstance(topics, str) or not topics.strip():
+            raise RegistryError(f"page {key}: say what's on it (text)")
+        try:
+            pages = parse_pages(str(key), total)
+        except ValueError:
+            raise RegistryError(f"{key!r} is not a page number or a range like 121-130") from None
+        for n in pages:
+            index[n] = f"{index[n]} · {topics.strip()}" if n in index else topics.strip()
+    return index
+
+
+def index_texts(entry: dict) -> list[str]:
+    """Pages "text" from the page index (page N at position N-1), for `search_pages`."""
+    index = page_index(entry)
+    return [index.get(n, "") for n in range(1, max(index, default=0) + 1)]
+
+
+def search_index(e: dict, args: argparse.Namespace, hints: list[str], misses: list[str]) -> None:
+    hits = search_pages(index_texts(e), args.query)
+    if not hits:
+        if e.get("page_index"):
+            misses.append(f"{e['id']} (page index)")
+        hints.append(visual_hint(e))
+        return
+    out(f"{e['id']} — {short(e)} (no text layer; matched its page index in gear/manuals.yaml): "
+        f"{len(hits)} page(s) match \"{args.query}\"")
+    for h in hits[: args.limit]:
+        out(f"  p{h['page']:<4} {h['snippet']}")
+        out(f"  {'':<5} {cite(e, h['page'])}")
+    if len(hits) > args.limit:
+        out("  more: " + ", ".join(f"p{h['page']}" for h in hits[args.limit:]))
+    out(f"  the index only says what's where: read the page (`page {e['id']} N`) before citing it")
 
 
 def cmd_search(args: argparse.Namespace) -> int:
@@ -880,7 +931,7 @@ def cmd_search(args: argparse.Namespace) -> int:
     hints, misses, statuses = [], [], []
     for e in entries:
         if e["kind"] == "image-guide":
-            hints.append(visual_hint(e))
+            search_index(e, args, hints, misses)
             continue
         try:
             pages, _ = page_texts(e)
@@ -889,7 +940,7 @@ def cmd_search(args: argparse.Namespace) -> int:
             statuses.append("BROKEN")
             continue
         if e["kind"] == "pdf" and is_scanned(pages):
-            hints.append(visual_hint(e))
+            search_index(e, args, hints, misses)
             continue
         hits = search_pages(pages, args.query)
         if not hits:
@@ -1265,6 +1316,8 @@ def cmd_text(args: argparse.Namespace) -> int:
         out(f"{short(e)} page {args.page} is an image (no text layer); render it with "
             f"`page {e['id']} {args.page}` and read it visually. Official image: "
             f"{page_image_url(e, ids[args.page - 1])}")
+        if page_index(e).get(args.page):
+            out(f"page index: {page_index(e)[args.page]}")
         return EXIT_OK
     pages, _ = page_texts(e)
     if e["kind"] == "web":
@@ -1276,6 +1329,8 @@ def cmd_text(args: argparse.Namespace) -> int:
     out(f"# {short(e)}, PDF page {args.page} of {len(pages)} — cite as {cite(e, args.page)}\n")
     out(pages[args.page - 1].strip() or "(no text layer on this page: it's a scan or a drawing; "
                                         "read it visually)")
+    if not pages[args.page - 1].strip() and page_index(e).get(args.page):
+        out(f"page index: {page_index(e)[args.page]}")
     return EXIT_OK
 
 

@@ -27,7 +27,10 @@ manuals/docs and cited.
   **PDF page number** (what `#page=N` opens; printed page numbers can
   differ). Image guides (TX-6): "TX-6 guide p113" linking that page's
   image. Web guides: link the page. When a fact comes from a device file,
-  cite the official source that file links for it.
+  cite the official source that file links for it. Facts already in a
+  device file with their source link were verified when they were added:
+  cite that link instead of re-fetching the source to re-check it (only
+  re-check time-sensitive things: firmware, versions, availability).
 - **If you can't find it in the docs, say so.** Label it clearly as
   unverified rather than filling the gap from general knowledge, and don't
   present a guess as fact.
@@ -43,14 +46,18 @@ never commit them.
 
 | Command | Use it to |
 |---------|-----------|
-| `search <manual-id\|gear-id\|all> "terms"` | find pages, with snippets and ready-made citation links |
+| `search <manual-id\|gear-id\|all> "terms"` | find pages, with snippets and ready-made citation links (several terms = pages with all of them) |
 | `text <manual-id> <page>` | read the whole page before you cite it |
 | `fetch <manual-id\|gear-id\|all>` | download/refresh the cache; prints the local path |
 | `check [ids…]` | online drift check: link alive, file unchanged, newer version? |
 | `list` | what's registered and cached |
 
 - Scanned PDFs (the vintage Fender manuals) and image guides (TX-6) have no
-  text layer; `search` says so. Read those pages visually and cite by page.
+  text layer: `search` matches their `page_index` in `gear/manuals.yaml`
+  (what's on each page) instead, and `text` shows a page's index line. The
+  index only says what's where: render the page (`page <id> N`) and read it
+  before citing it. When you learn what's on a page the index doesn't
+  mention, add it to the index.
 - **Drift:** if any command reports BROKEN, MOVED, CHANGED or NEWER (exit
   code 2 or 3), tell Sam **at the top of your reply**. Try rediscovery (the
   entry's `discover.page`, or `web_search` on the vendor's site), verify the
@@ -70,15 +77,20 @@ lists. Use the simplest picture that answers the question:
 2. **Extract the figure:** `manuals.py page <id> <N> --grid` → view it → read
    the area off the grid → `page <id> <N> --box x0,y0,x1,y1` → view the crop
    to check it. On PDFs with text, `--find "label"` boxes a printed label.
-   For scans and the TX-6 guide, find the page with `manuals.py sheet <id>`.
+   For scans and the TX-6 guide, find the page with `manuals.py search`
+   (page index), or browse `manuals.py sheet <id>`.
 3. **Compose, annotate or create** with `scripts/diagram.py spec.yaml`:
    official drawings and text boxes, arrows labelled with the cable and the
    jack names as printed on the devices, highlights on the right jack or
    button, and `sources`. Examples in `setup/diagrams/`. Keep it small (≈8
    nodes) with signal flowing left → right; give nodes `col`/`row` when
-   there are more than ~5.
+   there are more than ~5. Give highlights as `page_box`, read off the same
+   `--grid` render as the crop (no converting to crop fractions), and use
+   `label_at: left|right|above|below` when a label would hide a control.
 
-Always `view` the PNG yourself before presenting it (overlaps, bad crops).
+Always `view` the PNG yourself before presenting it (overlaps, bad crops);
+`diagram.py spec.yaml --focus <node>` also writes that node enlarged, so
+small marks and labels can be checked.
 **Present it:** if the `open_canvas` tool exists (GitHub Copilot app), open
 the PNG in the `browser` canvas with its `file:///` URI (reuse one
 `instanceId` and `navigate_page` for later visuals); always give the file path
@@ -91,15 +103,17 @@ worth keeping.
 | File | What it holds |
 |------|---------------|
 | `gear/inventory.yaml` | Every piece of gear: id, model, role, I/O, doc + firmware URLs, unknowns |
-| `gear/manuals.yaml` | Official manuals by URL: version, verification, how to spot newer versions |
+| `gear/manuals.yaml` | Official manuals by URL: version, verification, how to spot newer versions, key pages, page indexes for manuals without text |
 | `gear/<id>.md` | Per-device reference: docs, firmware update steps, I/O, key features, built-in sounds/presets, tips |
-| `setup/signal-chain.md` | Current cabling (Mermaid diagram + connection table) |
+| `setup/signal-chain.md` | Current cabling (Mermaid diagram + connection table) and where the tone controls are along the chain |
 | `setup/recording.md` | How to record the whole rig onto the OP-1 field (the end goal) |
 | `setup/diagrams/*.yaml` | Diagram recipes for `diagram.py` (specs, never PNGs) |
 | `creative/ideas-log.md` | Past creative suggestions Sam liked/disliked, so ideas stay fresh |
 
 Read `gear/inventory.yaml` first on every invocation, then only the device
-files relevant to the question.
+files relevant to the question. Sam often dictates, so gear names can arrive
+misheard ("Thunderbase Six" was the Bass VI): match them by sound against
+the inventory, say in one line which device you took it to be, and carry on.
 
 ## Mode 1 — Technical help ("how do I…", firmware, features, troubleshooting)
 
@@ -110,7 +124,16 @@ files relevant to the question.
    page you'll cite). For what the registry doesn't cover (firmware release
    notes, downloads pages), use `web_fetch` / `web_search` scoped to the
    vendor's site (Teenage Engineering guide pages are JS-rendered and often
-   fetch poorly; the registered PDFs don't have that problem).
+   fetch poorly; the registered PDFs don't have that problem). Fender's
+   product pages answer scripted fetches with 403 (eu.fender.com,
+   fender.com/en-US) or only the marketing blurb (uk.fender.com): their spec
+   tables are rendered by JavaScript, so don't retry. Use the device file
+   (its specs were taken from there) or `web_search`.
+
+   **Tone questions** ("too bassy", "thin", "harsh", "make it sound
+   like…"): start from "Shaping the tone" in `setup/signal-chain.md`, which
+   lists every tone control along the chain with its manual page, in signal
+   order.
 3. Reply as concrete numbered steps a novice can follow: which cable, which
    port, which button combo, which menu, what to download and from where.
    Example shape: "Connect USB-C → enter update mode via … → copy file … →

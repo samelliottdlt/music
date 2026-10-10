@@ -7,6 +7,7 @@ r"""Make simple, useful diagrams: boxes and official drawings joined by labelled
 
   uv run .github/skills/music-setup/scripts/diagram.py setup/diagrams/recording-mode.yaml
   uv run .github/skills/music-setup/scripts/diagram.py spec.yaml -o out/visuals/name.png
+  uv run .github/skills/music-setup/scripts/diagram.py spec.yaml --focus tx6   # + tx6 enlarged, to check marks
 
 Writes a PNG (default out/visuals/<spec name>.png, which is gitignored) and prints its path and
 file:/// URI. Specs are YAML or JSON ("-" reads stdin). Full examples: setup/diagrams/*.yaml.
@@ -25,8 +26,11 @@ nodes:
     #  or image: drawing.png | {file: drawing.png, box: [...]} | {url: https://..., box: [...]}
     #  box = crop as fractions (x0, y0, x1, y1); read it off `manuals.py page <id> <n> --grid`
     height: 200                        # image height in px (or width:); rotate: 90 = degrees clockwise
-    highlights:                        # marks on the image, as fractions of the image as shown
-      - {box: [0.27, 0.55, 0.43, 0.92], label: audio in, shape: box}   # shape: box | circle
+    highlights:                        # marks on the image
+      - {box: [0.27, 0.55, 0.43, 0.92], label: audio in, shape: box}   # box: fractions of the image as shown
+      - {page_box: [0.46, 0.8, 0.49, 0.84], label: here, shape: circle, label_at: right}
+      #  page_box: fractions of the whole page, read off the same --grid as the crop (unrotated images)
+      #  shape: box | circle; label_at: auto (below, or above if no room) | below | above | left | right
 edges:
   - {from: tx6, to: op1, label: "main out → audio in\n3.5 mm stereo"}
   #  style: dashed, color: "#e4572e", arrow: end | both | none, from_side/to_side: left|right|top|bottom
@@ -155,6 +159,7 @@ class Node:
     spec: dict
     img: Image.Image | None = None
     lines: list[Line] = field(default_factory=list)
+    marks: list = field(default_factory=list)   # highlight boxes as fractions of the image as shown
     bw: int = 0
     bh: int = 0
     w: int = 0
@@ -269,6 +274,32 @@ def rotate(im: Image.Image, degrees: float) -> Image.Image:
     return im.rotate(-d, expand=True, fillcolor=WHITE, resample=Image.Resampling.BICUBIC)
 
 
+LABEL_AT = ("auto", "below", "above", "left", "right")
+
+
+def mark_box(ns: dict, hl, i: int) -> tuple[float, float, float, float]:
+    """A highlight's box as fractions of the image as shown: `box` as is, or `page_box` in page fractions
+    (read straight off `manuals.py page --grid`), converted through the image's crop `box`."""
+    where = f"node {ns['id']!r} highlights[{i}]"
+    if not isinstance(hl, dict):
+        raise SpecError(f"{where} must be a mapping")
+    if hl.get("label_at", "auto") not in LABEL_AT:
+        raise SpecError(f"{where}: label_at must be one of {', '.join(LABEL_AT)}")
+    if "page_box" not in hl:
+        box = manuals.parse_box(hl.get("box"))
+        if not box:
+            raise SpecError(f"{where} needs a box (fractions of the image) or a page_box (page fractions)")
+        return box
+    if float(ns.get("rotate", 0)) % 360:
+        raise SpecError(f"{where}: page_box needs an unrotated image; use box instead")
+    img = ns.get("image")
+    crop = manuals.parse_box(img.get("box")) if isinstance(img, dict) else None
+    rel = manuals.relative_box(manuals.parse_box(hl["page_box"]), crop)
+    if rel is None:
+        raise SpecError(f"{where}: page_box {hl['page_box']} is outside the image's crop box {list(crop)}")
+    return rel
+
+
 # ------------------------------------------------------------------- build --
 
 def build(spec: dict, base: Path, registry: list[dict], texts: Texts, used: list[str]):
@@ -290,6 +321,7 @@ def build(spec: dict, base: Path, registry: list[dict], texts: Texts, used: list
                 w = max(1, round(im.width * h / im.height))
             n.img = im.resize((w, h), Image.Resampling.LANCZOS)
             n.bw, n.bh = w, h
+            n.marks = [mark_box(ns, hl, j) for j, hl in enumerate(ns.get("highlights") or [])]
             n.lines = texts.lines(ns.get("label"), SIZE["label"], True) + note
             cw, ch = measure(n.lines)
             n.w, n.h = max(w, cw), h + (CAPTION_GAP + ch if n.lines else 0)
@@ -657,10 +689,22 @@ def dashed_rect(d, r, color, width: int = 2) -> None:
         dashed_line(d, u, v, color, width)
 
 
+def label_spot(r, size: tuple[float, float], body, at: str) -> tuple[float, float]:
+    """Top-left corner of a highlight's label: below the mark by default (above when there's no room),
+    or where `label_at` says; always inside the image."""
+    (w, h), (x0, y0, x1, y1) = size, body
+    if at == "auto":
+        at = "below" if r[3] + 6 + h <= y1 else ("above" if r[1] - 6 - h >= y0 else "inside")
+    cy = (r[1] + r[3]) / 2 - h / 2
+    lx, ly = {"below": (r[0], r[3] + 6), "above": (r[0], r[1] - 6 - h), "inside": (r[0], r[3] - h - 4),
+              "left": (r[0] - 6 - w, cy), "right": (r[2] + 6, cy)}[at]
+    return (min(max(lx, x0), x1 - w) if w < x1 - x0 else lx,
+            min(max(ly, y0), y1 - h) if at != "inside" and h < y1 - y0 else ly)
+
+
 def draw_highlights(d, n: Node, texts: Texts) -> None:
     x0, y0, x1, y1 = n.body
-    for hl in n.spec.get("highlights") or []:
-        b = manuals.parse_box(hl.get("box"))
+    for b, hl in zip(n.marks, n.spec.get("highlights") or []):
         color = color_of(hl.get("color"), ACCENT)
         r = [x0 + b[0] * (x1 - x0), y0 + b[1] * (y1 - y0), x0 + b[2] * (x1 - x0), y0 + b[3] * (y1 - y0)]
         if hl.get("shape", "box") == "circle":
@@ -671,13 +715,14 @@ def draw_highlights(d, n: Node, texts: Texts) -> None:
         if lines:
             w, h = measure(lines)
             w, h = w + 12, h + 6
-            lx = min(max(r[0], x0), x1 - w) if w < x1 - x0 else r[0]
-            ly = r[3] + 6 if r[3] + 6 + h <= y1 else (r[1] - 6 - h if r[1] - 6 - h >= y0 else r[3] - h - 4)
+            lx, ly = label_spot(r, (w, h), n.body, hl.get("label_at", "auto"))
             d.rounded_rectangle([lx, ly, lx + w, ly + h], radius=5, fill=color)
             draw_lines(d, lines, lx + 6, ly + 2, align="left")
 
 
-def compose(spec: dict, base: Path, registry: list[dict]) -> tuple[Image.Image, list[str]]:
+def compose(spec: dict, base: Path, registry: list[dict],
+            layout: dict | None = None) -> tuple[Image.Image, list[str]]:
+    """The diagram image and warnings; pass a dict as `layout` to get each node's box on it, by id."""
     texts, used, warnings = Texts(), [], []
     if not isinstance(spec, dict):
         raise SpecError("the spec must be a mapping with `nodes` (and usually `edges`)")
@@ -786,7 +831,18 @@ def compose(spec: dict, base: Path, registry: list[dict]) -> tuple[Image.Image, 
             d.rounded_rectangle(e.box, radius=6, fill=WHITE, outline=e.color, width=2)
             draw_lines(d, e.label, (e.box[0] + e.box[2]) / 2, e.box[1] + LABEL_PAD[1])
     draw_lines(d, src_lines, MARGIN, height - MARGIN - measure(src_lines)[1], align="left")
+    if layout is not None:
+        layout.update({n.id: n.body for n in nodes})
     return canvas, warnings + texts.warnings
+
+
+def focus_view(image: Image.Image, box, pad: int = 12, target: int = 1400) -> Image.Image:
+    """One node of the diagram, enlarged so small highlights and labels can be checked by eye."""
+    x0, y0 = max(0, math.floor(box[0]) - pad), max(0, math.floor(box[1]) - pad)
+    x1, y1 = min(image.width, math.ceil(box[2]) + pad), min(image.height, math.ceil(box[3]) + pad)
+    crop = image.crop((x0, y0, x1, y1))
+    scale = max(1.0, min(4.0, target / max(crop.size)))
+    return crop.resize((round(crop.width * scale), round(crop.height * scale)), Image.Resampling.LANCZOS)
 
 
 def load_spec(path: str) -> tuple[dict, Path, str]:
@@ -814,10 +870,16 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("spec", help="diagram spec (YAML/JSON), or - for stdin")
     p.add_argument("-o", "--output", help="PNG to write (default out/visuals/<spec name>.png)")
     p.add_argument("--registry", help="manuals registry (default gear/manuals.yaml)")
+    p.add_argument("--focus", action="append", default=[], metavar="NODE",
+                   help="also write NODE enlarged (<output>-NODE.png) to check its highlights; repeatable")
     args = p.parse_args(argv)
+    layout: dict = {}
     try:
         spec, base, stem = load_spec(args.spec)
-        image, warnings = compose(spec, base, manuals.load_registry(args.registry))
+        image, warnings = compose(spec, base, manuals.load_registry(args.registry), layout)
+        for nid in args.focus:
+            if nid not in layout:
+                raise SpecError(f"--focus {nid!r}: unknown node id (known: {', '.join(layout)})")
     except (SpecError, manuals.RegistryError) as e:
         print(f"error: {e}", file=sys.stderr)
         return 1
@@ -828,6 +890,11 @@ def main(argv: list[str] | None = None) -> int:
     path.parent.mkdir(parents=True, exist_ok=True)
     image.save(path)
     manuals.announce(path, f"{image.width}x{image.height}px")
+    for nid in args.focus:
+        zoom = focus_view(image, layout[nid])
+        zpath = path.with_name(f"{path.stem}-{nid}{path.suffix}")
+        zoom.save(zpath)
+        manuals.announce(zpath, f"{zoom.width}x{zoom.height}px, node {nid!r} enlarged")
     for w in warnings:
         print(f"warning: {w}")
     return 0

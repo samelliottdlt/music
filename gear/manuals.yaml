@@ -40,6 +40,10 @@
 #                none          no reliable way; check by hand now and then
 #   verified   what was last verified upstream: date, sha256, bytes, pages, etag, last_modified
 #   notes      what an agent needs to know to use the document well
+#   page_index manuals with no text layer (image guides, scans): what's on each page, as page (or a
+#              range like 121-130) → titles as printed plus key words. `search` matches it and `text`
+#              shows it, so these manuals are searchable too. It only says what's where: read the page
+#              before citing it. Add pages as you learn them.
 #
 # Every gear id in gear/inventory.yaml has at least one entry.
 
@@ -116,12 +120,132 @@ manuals:
       ids_sha256: fa846bfbf87bd10a3ac149b511a0c3a79ce9f6b0bde00e6f920807f61f50f574
     notes: >-
       No PDF exists: the guide is 133 page images (2000x1389, text baked in),
-      so there is no text search; browse it visually and cite "TX-6 guide pN"
-      linking the page image. Key pages: 4 hardware, 6-9 audio in/out,
-      10-12 audio in/out examples, 23-24 input mode, 49-51 disk recorder,
-      53 aux out, 57 cue out, 62 instrument tuner, 71-72 usb / usb audio,
-      107 signal flow, 111-118 "field": using TX-6 with other gear
-      (113 = OP-1 + OP-Z + PO + M-1 + TX-6 + DAW + OB-4).
+      so there is no text layer: `search` matches the page_index below
+      instead. Read the page visually and cite "TX-6 guide pN" linking the
+      page image.
+    page_index:
+      1: cover, TX-6 field mixer user guide
+      2: introduction
+      3: field system; care
+      4: hardware highlights (6 stereo inputs, 3 stereo outputs main / cue / aux, usb audio and midi, low-pass and high-pass filter, 3-band equalizer eq, compressor, limiter, 2 multi-effect units, crossfader, midi over usb-c and bluetooth, instrument tuner, synthesizer with sequencer, 8 hour battery)
+      5: hardware drawings, top and side
+      6: audio in, six 3.5 mm stereo input jacks, usb-c
+      7: inputs drawing, input jack numbering
+      8: audio out, main out (6.35 mm with removable 3.5 mm adapter), aux out, cue out
+      9: outputs drawing
+      10: audio in examples (line level sources; guitars and microphones may need a preamp)
+      11: audio in example drawings (mic, guitar through a preamp, pocket operator, DAW, M-1 headset)
+      12: audio out examples (headphones, monitors, speakers, recording, usb multitrack to a daw)
+      13: power on
+      14: charging; firmware update
+      15: start, select knob and shift button
+      16: guide conventions (press, hold, turn, button combinations)
+      17: knobs and buttons (FX I, FX II, track buttons, aux button, cue button, parameter knobs blue / orange / white)
+      18: faders and meters, clipping
+      19: screen, title screen, home screen
+      20: home screen, master level, FX I and FX II active
+      21: general operations (solo / mute, cycle the track menu, aux / cue page, mic page, system menu, fx menu)
+      22: general operations screens (main volume, tempo, menu, exit)
+      23: input mode when a plug is connected (mono, balanced mono)
+      24: input mode (stereo, split, main out detection)
+      25: track menu (hold shift + track button), filter (low pass / high pass, LP HP), equalizer eq (3-band high / mid / low)
+      26: track menu, compressor, input gain, panning; hold select to reset a parameter
+      27: solo
+      28: solo and mute modes, momentary
+      29: parameter knobs, 3-band equalizer eq by default, ±18 dB per band
+      30: equalizer eq, blue knob high, orange knob mid, white knob low frequencies
+      31: parameter knob settings, custom knob scheme (filter, compressor, pan, eq, aux send, FX I send, synth frequency, detune, length, midi cc)
+      32: parameter knob schemes (custom, per track, synth)
+      33: FX buttons, send effects, insert effects
+      34: FX I send effects, effect send level, effect return level
+      35: FX I chorus (subtle, medium, strong), reverb drone
+      36: FX I delay (3/2 beat, warp, mash)
+      37: FX II insert effects on one track, tremolo, freeze
+      38: FX II tape, filter (cut, resonance)
+      39: FX II distortion (push, drive, blow, destroy)
+      40: FX II crush (shape, bend, chip, bit)
+      41: tempo, internal tempo or external midi clock, 40–400 bpm, tap tempo
+      42: tempo screens (stopped, playing, beat indicator)
+      43: tempo fine tuning
+      44: quick access shortcuts
+      45: clock source (internal, usb, ble, track 2), midi clock out
+      46: clock source screens
+      47: beat tracking
+      48: beat tracking screens (tap, detected bpm)
+      49: disk recorder, record to a usb drive
+      50: disk recorder, recording and playing
+      51: disk recorder file browser
+      52: disk recorder, delete files, usb drive space
+      53: aux out
+      54: aux out, level, pre / post fader per track
+      55: split aux out (aux A and B)
+      56: split aux out screens
+      57: cue out, headphones, cue mode
+      58: cue out mode screens
+      59: headset mic
+      60: headset mic volume, gain / gate, gain / duck
+      61: headset mic fx (reverb, delay)
+      62: instrument tuner
+      63: sync output on aux / cue (pocket operators, modular)
+      64: sync output modes (8th / 16th note)
+      65: out, switch the aux and cue outputs (normal / switched), e.g. for high impedance headphones
+      66: sample rate (48 kHz / 44.1 kHz)
+      67: system menu
+      68: system menu pages (sample, loop, midi, ble, scene, tuner, limiter, vu, out, rate, leds, display)
+      69: vu meter, pre / post fader
+      70: limiter
+      71: usb audio modes (2 ch, 12 in, 12 out, 12 ch)
+      72: usb audio mode screens
+      73: synth mode, built-in synthesizer
+      74: synth modes (off, play, seq, tone)
+      75: synth settings (sound, frequency, length, sequence)
+      76: synth waveforms (sine, triangle, square, saw)
+      77: synth settings, midi channel, detune, slide
+      78: synth drum sounds (clap, hihat, kick, snare)
+      79: synth settings (sample, frequency, length, sequence)
+      80: sound generators, sequencer, fx and looper for jams
+      81: sequencer, 22 preloaded patterns, 6 user patterns
+      82: sequencer patterns, chaining
+      83: sequencer user patterns, 16 steps
+      84: sequencer user pattern editing (steps, pitch per step)
+      85: sample mode
+      86: sample mode, recording a sample (up to 5.5 seconds)
+      87: sample playback
+      88: sample playback (pitch, start, end)
+      89: loop mode, looper (22 second loop)
+      90: loop recording and playback
+      91: save samples and loops to a usb drive
+      92: save / load looper screens
+      93: dj mode
+      94: dj mode crossfader (off, slow fade, fast cut)
+      95: led settings
+      96: brightness and theme (dark mode)
+      97: ble bluetooth, device / host
+      98: name
+      99: scene, save / load mixer scenes
+      100: usb ground isolation (gnd), os / firmware version, battery, factory reset
+      101: midi, ctrl in / ctrl out
+      102: midi note on / note off
+      103: midi cc
+      104: midi cc screens
+      105: link mode, two TX-6 over usb
+      106: link mode drawing
+      107: signal flow overview
+      108: signal flow, input channel (gain, filter, eq, compressor, pan, fader, sends)
+      109: signal flow, master and aux buses
+      110: signal flow, headphones and microphone
+      111: field, using TX-6 with other gear
+      112: example setup, OP-1 and a mobile device, M-1 headphones
+      113: example setup, OP-1, OP-Z, pocket operator, DAW, M-1 headphones, OB-4
+      114: example setup, OP-Z through an effects pedal (FX), OB-4
+      115: example setup, OP-1 and two pocket operators, M-1 headphones, OD-11
+      116: example setup, dj with two CDJs, M-1 headphones, OD-11
+      117: example setup, mic, guitar through effects pedals (FX) and a preamp, OB-4
+      118: example setup, twelve pocket operators, M-1 headset
+      119: technical specifications
+      120: electrical characteristics (input impedance 10 kOhm, gain 0–42 dB, max levels); handling
+      121-130: warnings, warranty, regulatory compliance (FCC, IC, RF exposure, EU / UK), battery caution, recycling
+      131-133: back matter, teenage engineering address
 
   - id: ob-4-guide
     gear: ob-4
@@ -158,7 +282,11 @@ manuals:
       pages: 50
     notes: >-
       Shopify CDN: no ETag/Last-Modified, and the ?v= number changes whenever
-      the file is replaced. Text plus raster illustrations.
+      the file is replaced. Text plus raster illustrations. Key pages: 6 panel
+      overview (buttons A-D, effect colours, MIX), 7-8 calibration,
+      9 navigation, 11-18 the effects by module, 19-21 secondary controls,
+      26-29 FX SETUP (filter style p29), 30-32 saving presets, 42-43 jacks,
+      46-47 MIDI chart.
 
   - id: boss-tu-3s-manual
     gear: boss-tuner
@@ -283,11 +411,27 @@ manuals:
       etag: '"4007c5d5a75ad0196114a2bcb0855323"'
       last_modified: Tue, 09 Jan 2018 16:07:20 GMT
     notes: >-
-      Vintage instruction manual, scanned (no text layer): read it visually.
+      Vintage instruction manual, scanned (no text layer): read it visually;
+      `search` matches the page_index below.
       Same file as .../OM_leg_bass_Bass_VI_1962.pdf on the bass manuals page
       (the scan's own file name says 1966). Sam's bass is a modern reissue
       (Vintera III Early '60s Bass VI): use its product page and
       fender-bass-manual first; details here may differ.
+    page_index:
+      1: cover, Fender instruction manual for Bass VI
+      2: welcome, model and serial number
+      3: overview, six-string bass tuned one octave below guitar, three pickups with on-off switches, tone and volume controls, floating tremolo
+      4: string height adjustment (bridge, Figure A); string length adjustment (intonation, 12th fret harmonic)
+      5: Fender floating tremolo and tremolo lock (trem-lock) button (Figure B); tremolo spring tension screw
+      6: restringing (lock the tremolo first); adjustable neck truss rod
+      7: pickups and controls (3 pickup on-off switches, tone modification switch = low cut / strangle, tone control above the input jack, volume control); off-set waist body; Fender Mute (string mute, press its lettered part to switch it on or off)
+      8: Figure C controls drawing (3 on-off switches, tone modification switch, volume and tone controls, input jack, pickups, neck truss rod nut, Fender Mute); pickup height adjustment (string balance); chrome-plated parts
+      9: Fender cases and bags
+      10: Fender Mastersound flatwound strings (Silver Label set numbers)
+      11: warranty
+      12: warranty registration card
+      13: mailing card, Fender Musical Instruments address
+      14: back cover
 
   - id: fender-jaguar-vintage
     gear: jaguar
@@ -309,9 +453,18 @@ manuals:
       etag: '"129818576f21a18463e2d459fe50e9fb"'
       last_modified: Tue, 09 Jan 2018 16:06:36 GMT
     notes: >-
-      Scanned (no text layer), with controls diagrams: read it visually. It
-      covers the original Jaguar; Sam's is a Japanese-made Jaguar from around
-      2007-2008 (exact model TODO), so details may differ.
+      Scanned (no text layer), with controls diagrams: read it visually;
+      `search` matches the page_index below. It covers the original Jaguar;
+      Sam's is a Japanese-made Jaguar from around 2007-2008 (exact model
+      TODO), so details may differ.
+    page_index:
+      1: cover, Fender Jaguar instruction manual
+      2: welcome, model and serial number; Jaguar overview
+      3: string height adjustment (bridge, Figure A); string length adjustment (intonation); Fender floating tremolo (Figure B); tremolo spring tension screw
+      4: Fender Mute (string mute); restringing; lead and rhythm circuits (circuit selector switch, pickup on-off switches, tone modification switch = strangle / low cut, lead tone and volume controls, rhythm circuit roller volume and tone), Figure C controls drawing
+      5: adjustable neck truss rod; pickup height adjustment; chrome parts; off-set waist; Fender Jaguar cases
+      6: Fender Mastersound flatwound and pure nickel wrap strings (set numbers); warranty
+      7: back cover
 
   - id: ibanez-acoustic-manual
     gear: ibanez-acoustic
