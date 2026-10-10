@@ -31,7 +31,7 @@ edges:
   - {from: tx6, to: op1, label: "main out → audio in\n3.5 mm stereo"}
   #  style: dashed, color: "#e4572e", arrow: end | both | none, from_side/to_side: left|right|top|bottom
 groups:
-  - {label: Pedalboard, nodes: [pedals, tuner, chroma]}
+  - {label: OP-1 field (records to tape), nodes: [op1, input]}
 sources:                               # footer; manual pages used for images are cited automatically
   - "Connections: setup/signal-chain.md"
 """

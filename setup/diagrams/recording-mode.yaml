@@ -7,7 +7,7 @@
 title: Recording mode — the whole rig onto the OP-1 field's tape
 subtitle: The OP-1 field is the last stop, so its output never loops back into the TX-6 (no feedback).
 nodes:
-  - {id: amp, label: Amp, note: "line / DI out\n(never the speaker out)", col: 0, row: 0}
+  - {id: amp, label: Orange Micro Terror, note: "HEADPHONES out (CabSim)\nnever the speaker outputs", col: 0, row: 0}
   - {id: opxy, label: OP-XY, note: 3.5 mm out, col: 0, row: 1}
   - {id: kalimba, label: Kalimba, note: optional, style: dashed, col: 0, row: 2}
   - id: tx6
@@ -42,7 +42,7 @@ nodes:
     height: 200
     image: {manual: tx-6-guide, page: 113, box: [0.643, 0.565, 0.8, 0.855]}
 edges:
-  - {from: amp, to: tx6, label: 1/4in → 3.5 mm}
+  - {from: amp, to: tx6, label: "1/4in → 3.5 mm\nmono mode"}
   - {from: opxy, to: tx6, label: 3.5 mm stereo}
   - {from: kalimba, to: tx6, label: 1/4in → 3.5 mm, style: dashed}
   - {from: tx6, to: op1, label: "main out → audio in\n3.5 mm stereo (TRS)", color: "#e4572e"}
@@ -52,5 +52,6 @@ groups:
   - {label: OP-1 field (records to tape), nodes: [op1, input]}
 sources:
   - "Routing: setup/recording.md (recording mode)."
-  - "Jacks: OP-1 field guide p4 (usb c / audio in / audio out); TX-6 guide p8 (main out: a 6.35 mm jack
-    with a removable 3.5 mm adapter); OB-4 guide (line input, FM radio). Input screen: OP-1 field guide p54."
+  - "Jacks: Micro Terror manual p3 (HEADPHONES with CabSim, also for a mixer); OP-1 field guide p4 (usb c /
+    audio in / audio out); TX-6 guide p8 (main out: a 6.35 mm jack with a removable 3.5 mm adapter) and p23
+    (mono input mode); OB-4 guide (line input, FM radio). Input screen: OP-1 field guide p54."

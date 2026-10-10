@@ -1,7 +1,8 @@
 # Recording the whole rig on the OP-1 field
 
-**Goal:** capture everything that goes into the TX-6 (guitars/bass via amp,
-OP-XY, kalimba, etc.) onto the OP-1 field's 4-track tape.
+**Goal:** capture everything that goes into the TX-6 (guitars/bass via the
+Chroma Console and the Orange Micro Terror, OP-XY, kalimba, etc.) onto the
+OP-1 field's 4-track tape.
 
 ## The catch: feedback loop
 
@@ -16,7 +17,7 @@ Make the OP-1 field the **last** stop in the chain instead of a TX-6 source.
 
 ```mermaid
 flowchart LR
-    AMP[Amp line/DI out] --> TX6[TX-6]
+    AMP[Micro Terror<br/>HEADPHONES out] --> TX6[TX-6]
     OPXY[OP-XY] --> TX6
     KAL[Kalimba] -.optional.-> TX6
     TX6 -->|main out 3.5mm| OP1[OP-1 field<br/>line in → tape]

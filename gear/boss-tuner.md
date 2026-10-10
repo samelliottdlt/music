@@ -30,8 +30,9 @@ button combos.
 - **Bass VI:** tune like a guitar one octave down (E1 A1 D2 G2 B2 E3). Use
   Chromatic or Guitar mode; check which handles the low register best.
 
-## Placement note
+## Placement
 
-The tuner currently sits **after** the other pedals. Tuning is most accurate
-from a clean signal, so either turn off drive/fuzz/modulation before tuning
-or move the tuner to the start of the pedalboard.
+**TODO**: is it still on the pedalboard? The Chroma Console is now the only
+pedal in the chain, so the tuner is left out of `setup/signal-chain.md` until
+Sam confirms. If it goes back on the board, put it first (before the Chroma
+Console) so it hears the dry instrument.

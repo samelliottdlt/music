@@ -72,7 +72,8 @@ uv run .github/skills/music-setup/scripts/diagram.py setup/diagrams/recording-mo
 
 ```mermaid
 flowchart LR
-    G[Bass VI / Jaguar / Telecaster / Ibanez] --> P[Pedals] --> T[BOSS tuner] --> C[Chroma Console] --> A[Amp] --> TX6[TX-6]
+    G[Bass VI / Jaguar / Telecaster / Ibanez TOD10N] --> C[Chroma Console] --> A[Orange Micro Terror]
+    A -->|headphones out| TX6[TX-6]
     OP1[OP-1 field] --> TX6
     OPXY[OP-XY] --> TX6
     TX6 --> OB4[OB-4]
@@ -80,9 +81,9 @@ flowchart LR
 
 ## Open questions (fill these in to make the skill smarter)
 
-- Amp model, and which amp output goes to the TX-6
-- Pedals before the tuner (models, order)
-- BOSS tuner model (TU-3 / TU-3W / TU-3S?)
-- Bass VI, Jaguar, Telecaster variants; Ibanez model and whether it has a pickup
+- BOSS tuner model (TU-3 / TU-3W / TU-3S?), and is it still on the pedalboard?
+- Is there a speaker cabinet for the Micro Terror? It needs one connected
+  whenever nothing is plugged into its headphones jack.
+- Bass VI, Jaguar, Telecaster variants
 - TX-6 channel assignments
 - Confirm the kalimba is the Lottie Canto "Colour Palette"

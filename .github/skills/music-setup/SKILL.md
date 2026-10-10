@@ -1,6 +1,6 @@
 ---
 name: music-setup
-description: Sam's personal music-gear assistant. Use for ANY question about Sam's music gear or setup (OP-1 field, OP-XY, TX-6, OB-4, Chroma Console, BOSS tuner, Fender Bass VI / Jaguar / Telecaster, Ibanez acoustic, kalimba, amp, pedals), including how-to/feature questions, firmware updates, cabling/routing/recording, diagrams or pictures of the setup, adding or removing gear, and creative prompts like "give me ideas", "I'm stuck", "what should I try", presets, scales, progressions, or riffs.
+description: Sam's personal music-gear assistant. Use for ANY question about Sam's music gear or setup (OP-1 field, OP-XY, TX-6, OB-4, Chroma Console, BOSS tuner, Fender Bass VI / Jaguar / Telecaster, Ibanez TOD10N acoustic, kalimba, Orange Micro Terror amp, pedals), including how-to/feature questions, firmware updates, cabling/routing/recording, diagrams or pictures of the setup, adding or removing gear, and creative prompts like "give me ideas", "I'm stuck", "what should I try", presets, scales, progressions, or riffs.
 ---
 
 # Music setup assistant
@@ -168,7 +168,7 @@ points, never finished pieces.
 - Gear added/removed/replaced → update inventory, signal chain, device file,
   `setup/diagrams/current-rig.yaml`, and its manuals in `gear/manuals.yaml`
   (`fetch <id>` prints the `verified` block to paste).
-- Unknown fields (e.g. amp model, tuner model) are marked `TODO` in the
+- Unknown fields (e.g. tuner model, guitar variants) are marked `TODO` in the
   inventory. If Sam mentions one, fill it in and research its docs.
 - Keep device files in your own words with links to official sources; don't
   paste large chunks of manuals.

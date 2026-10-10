@@ -41,8 +41,8 @@
 #   verified   what was last verified upstream: date, sha256, bytes, pages, etag, last_modified
 #   notes      what an agent needs to know to use the document well
 #
-# Gear with no entry yet: amp and pedals (models are TODO in the inventory).
-# Add their manuals once the models are known.
+# Every gear id in gear/inventory.yaml has at least one entry. The BOSS
+# tuner's model is still TODO (TU-3 assumed): fix its entry once confirmed.
 
 manuals:
   # ---------- Teenage Engineering ----------
@@ -183,6 +183,31 @@ manuals:
       multilingual pages; English is on p1 (crop to it when rendering). It is
       owner-password encrypted but opens, renders and searches normally.
 
+  - id: orange-micro-terror-manual
+    gear: orange-micro-terror
+    title: "Product Manual: Micro Terror"
+    short: Micro Terror manual
+    publisher: Orange Amplification
+    kind: pdf
+    url: https://cdn.shopify.com/s/files/1/0943/5250/7206/files/Micro_Terror_-_Word_Manual_2025_V1.0_EN.pdf?v=1758622989
+    version: Version 1.0 EN, August 2025
+    discover:
+      page: https://orangeamps.com/products/micro-terror
+      method: link
+      match: 'https://cdn\.shopify\.com/[^"''\s]*Micro_Terror[^"''\s]*_EN\.pdf\?v=(\d+)'
+    verified:
+      date: 2026-10-10
+      sha256: 162acaa421354b09fa2a6fdc8a0060871079259f4dfe6b7eb68fb8bb7482e982
+      bytes: 168656
+      pages: 4
+    notes: >-
+      Linked as "click here" under Manuals on the product page. Shopify CDN:
+      no ETag/Last-Modified, and the ?v= number changes whenever the file is
+      replaced. orangeamps.com sometimes rate-limits scripts (HTTP 429/503):
+      if `check` says the discovery page is BROKEN with one of those, retry
+      later before treating it as a dead link. Controls, jacks and specs are
+      all on p3.
+
   # ---------- Instruments ----------
   - id: fender-electric-guitar-manual
     gear: [jaguar, telecaster]
@@ -295,9 +320,35 @@ manuals:
       etag: '"ae4a6-5958d3691b780"'
       last_modified: Wed, 23 Oct 2019 05:30:22 GMT
     notes: >-
-      General acoustic guitar manual. The same page lists model-specific
-      preamp manuals (AEQ..., ICE..., DP1): add the right one once Sam's model
-      and pickup are known. The page links it as http://; store https://.
+      General acoustic guitar manual (not model specific). Sam's TOD10N has
+      its own preamp manual: ibanez-aeq210tf-manual. The page links it as
+      http://; store https://.
+
+  - id: ibanez-aeq210tf-manual
+    gear: ibanez-acoustic
+    title: AEQ210TF Preamp Information (English)
+    short: Ibanez AEQ210TF manual
+    publisher: Ibanez (Hoshino Gakki)
+    kind: pdf
+    url: https://www.hoshinogakki.co.jp/pdf/ibanez/manual/en/ag/acos_guitar_preamp_AEQ210TF_EN.pdf
+    version: file dated 2022-03-28
+    discover:
+      page: https://www.ibanez.com/world/support/manual/
+      method: link
+      # a revision would likely be named ..._AEQ210TF_Ver2_EN.pdf, like other Ibanez preamp manuals
+      match: 'https?://www\.hoshinogakki\.co\.jp/pdf/ibanez/manual/en/ag/acos_guitar_preamp_AEQ210TF(?:_Ver(\d+))?_EN\.pdf'
+    verified:
+      date: 2026-10-10
+      sha256: 68a6997e905ba3b63b3b1ab3e24600aa5b88a36064a590d7f6da63a48c563d8a
+      bytes: 931628
+      pages: 3
+      etag: '"e372c-5db4147e37740"'
+      last_modified: Mon, 28 Mar 2022 06:18:29 GMT
+    notes: >-
+      The preamp (with onboard tuner) in Sam's TOD10N, per the TOD10N spec
+      page. Controls and tuner on p2 (the text layer is jumbled there: read
+      the page visually), battery on p3. The manuals page links it as
+      http://; store https://.
 
   - id: colour-palette-kalimba-page
     gear: colour-palette-kalimba

@@ -54,6 +54,7 @@ kalimba sources. TE's "field audio" cables are slim so all six fit.
 ## Tips
 
 - Keep a **channel map** in `setup/signal-chain.md`.
-- Guitar amp into a channel: start with channel gain low; amp line/headphone
-  out is hotter than an instrument.
+- Orange Micro Terror into a channel: its HEADPHONES out, a 1/4in → 3.5mm
+  cable, **mono** input mode, and start with the amp volume and channel gain
+  low (`gear/orange-micro-terror.md`).
 - Recording to OP-1 field: `setup/recording.md`.

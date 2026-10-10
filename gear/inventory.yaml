@@ -3,7 +3,7 @@
 # Official manuals (PDFs/guides) are registered by URL in gear/manuals.yaml.
 # Use `TODO` for anything not yet known; fill it in when Sam mentions it.
 
-last_reviewed: 2026-10-09
+last_reviewed: 2026-10-10
 
 gear:
   # ---------- Instruments: strings ----------
@@ -13,7 +13,7 @@ gear:
     role: 6-string bass (tuned like a guitar, one octave lower)
     variant: TODO  # e.g. Squier Classic Vibe, American Vintage II 1962
     outputs: ["1/4in mono instrument out"]
-    connects_to: pedalboard
+    connects_to: chroma-console
     docs: https://support.fender.com/hc/en-us/articles/42585248961563-Fender-Bass-Guitar-Owner-s-Manuals
     details: gear/bass-vi.md
 
@@ -23,7 +23,7 @@ gear:
     role: electric guitar
     variant: TODO
     outputs: ["1/4in mono instrument out"]
-    connects_to: pedalboard
+    connects_to: chroma-console
     docs: https://www.fender.com/articles/instruments/jaguar-controls-past-and-present-what-you-need-to-know
     details: gear/jaguar.md
 
@@ -33,18 +33,19 @@ gear:
     role: electric guitar
     variant: TODO
     outputs: ["1/4in mono instrument out"]
-    connects_to: pedalboard
+    connects_to: chroma-console
     docs: https://support.fender.com/hc/en-us/articles/42585217965083-Fender-Guitar-Owner-s-Manuals
     details: gear/telecaster.md
 
   - id: ibanez-acoustic
-    name: Ibanez acoustic guitar
+    name: Ibanez TOD10N (Tim Henson signature)
     category: instrument
-    role: acoustic guitar
-    model: TODO  # label inside the soundhole
-    has_pickup: TODO  # if acoustic-electric, 1/4in out into the pedalboard
-    connects_to: TODO
-    docs: https://www.ibanez.com/usa/support/manual/acoustic_guitars.html
+    role: nylon-string acoustic-electric guitar
+    model: TOD10N
+    pickup: Fishman S-Core + Ibanez AEQ210TF preamp with onboard tuner (one 9V battery)
+    outputs: ["1/4in out"]
+    connects_to: chroma-console
+    docs: https://www.ibanez.com/na/products/detail/tod10n_5b_02.html
     details: gear/ibanez-acoustic.md
 
   - id: colour-palette-kalimba
@@ -57,19 +58,13 @@ gear:
     docs: https://lottiecanto.com/shop/p/colourpalette
     details: gear/colour-palette-kalimba.md
 
-  # ---------- Pedalboard ----------
-  - id: pedals
-    name: Pedal chain (other pedals)
-    category: effects
-    role: effects before the tuner
-    models: TODO  # list each pedal in order
-    details: setup/signal-chain.md
-
+  # ---------- Pedals ----------
   - id: boss-tuner
     name: BOSS tuner (assumed TU-3)
     category: effects
-    role: tuner pedal on the pedalboard
+    role: tuner pedal (doesn't change the sound)
     model: TODO  # confirm TU-3 / TU-3W / TU-3S
+    placement: TODO  # still on the pedalboard? Left out of setup/signal-chain.md until confirmed
     inputs: ["INPUT 1/4in"]
     outputs: ["OUTPUT 1/4in (muted while tuning)", "BYPASS 1/4in (always dry)", "DC OUT 9V"]
     docs: https://www.boss.info/us/products/tu-3/features/
@@ -78,20 +73,27 @@ gear:
   - id: chroma-console
     name: Hologram Electronics Chroma Console
     category: effects
-    role: multi-effect (Character / Movement / Diffusion / Texture), last pedal before amp
+    role: multi-effect (Character / Movement / Diffusion / Texture); the only pedal on the board, between the instruments and the amp
     inputs: ["1/4in stereo-capable in", "expression", "MIDI"]
     outputs: ["1/4in stereo-capable out"]
+    connects_to: orange-micro-terror
     docs: https://www.hologramelectronics.com/pages/chroma-console-manual
     firmware: https://www.hologramelectronics.com/pages/chroma-console-firmware
     details: gear/chroma-console.md
 
-  - id: amp
-    name: Guitar amplifier
+  - id: orange-micro-terror
+    name: Orange Micro Terror
     category: amplification
-    model: TODO
-    output_used_to_mixer: TODO  # line out / headphone out / DI out — NEVER raw speaker out
+    role: guitar amp head (valve preamp); its HEADPHONES out feeds a TX-6 channel
+    model: Micro Terror
+    inputs: ["INPUT 1/4in", "AUX IN 3.5mm (summed to mono)"]
+    outputs: ["HEADPHONES 1/4in (with CabSim; OK into a mixer)", "SPEAKER OUTPUTS (cab 8 ohm or higher)"]
+    output_used_to_mixer: HEADPHONES  # NEVER the speaker outputs
+    speaker_cabinet: TODO  # needed whenever the HEADPHONES jack isn't in use
+    power: 15V DC 2A, included adapter only
     connects_to: tx-6
-    details: gear/amp.md
+    docs: https://orangeamps.com/products/micro-terror
+    details: gear/orange-micro-terror.md
 
   # ---------- Teenage Engineering ----------
   - id: op-1-field

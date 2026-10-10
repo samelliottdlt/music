@@ -1,6 +1,6 @@
 # Current signal chain
 
-Last updated: 2026-10-09
+Last updated: 2026-10-10
 
 ```mermaid
 flowchart LR
@@ -8,14 +8,16 @@ flowchart LR
         BVI[Fender Bass VI]
         JAG[Fender Jaguar]
         TELE[Fender Telecaster]
-        IBZ[Ibanez acoustic<br/>if it has a pickup]
+        IBZ[Ibanez TOD10N<br/>nylon, acoustic-electric]
     end
 
-    BVI & JAG & TELE & IBZ -->|1/4in, one at a time| PEDALS[Pedals<br/>TODO: list]
-    PEDALS --> TUNER[BOSS tuner<br/>TU-3?]
-    TUNER --> CHROMA[Hologram<br/>Chroma Console]
-    CHROMA --> AMP[Guitar amp<br/>TODO: model]
-    AMP -->|line/headphone/DI out<br/>never speaker out| TX6
+    subgraph Pedalboard
+        CHROMA[Hologram<br/>Chroma Console]
+    end
+
+    BVI & JAG & TELE & IBZ -->|1/4in, one at a time| CHROMA
+    CHROMA --> AMP[Orange Micro Terror<br/>amp head]
+    AMP -->|HEADPHONES out, CabSim<br/>never the speaker outputs| TX6
 
     OP1[OP-1 field] -->|3.5mm stereo| TX6
     OPXY[OP-XY] -->|3.5mm stereo| TX6
@@ -35,11 +37,9 @@ keep it in sync with this file).
 
 | From | Out jack | To | In jack | Cable | Notes |
 |------|----------|----|---------|-------|-------|
-| Bass VI / Jaguar / Telecaster | 1/4in | first pedal | 1/4in | instrument cable | one instrument at a time |
-| pedals | 1/4in | BOSS tuner | INPUT | patch cable | pedal list TODO |
-| BOSS tuner | OUTPUT | Chroma Console | IN (L/mono) | patch cable | OUTPUT mutes while tuning |
-| Chroma Console | OUT (L/mono) | amp | input | instrument cable | |
-| amp | TODO (line/headphone/DI) | TX-6 | channel TODO | 1/4in → 3.5mm | **never** the speaker out |
+| Bass VI / Jaguar / Telecaster / Ibanez TOD10N | 1/4in | Chroma Console | INPUT L | instrument cable | one instrument at a time |
+| Chroma Console | OUTPUT L | Orange Micro Terror | INPUT | instrument cable | |
+| Orange Micro Terror | HEADPHONES (1/4in, CabSim) | TX-6 | channel TODO, mono mode | 1/4in → 3.5mm | **never** the speaker outputs |
 | OP-1 field | 3.5mm out | TX-6 | channel TODO | 3.5mm stereo | |
 | OP-XY | 3.5mm out | TX-6 | channel TODO | 3.5mm stereo | |
 | TX-6 | main out | OB-4 | line in (back) | 3.5mm stereo, 3-pole | |
@@ -58,12 +58,18 @@ keep it in sync with this file).
 
 ## Known issues / notes
 
-- **Tuner placement:** the tuner sits after the other pedals. Tuning is most
-  accurate from a clean signal — bypass drive/fuzz/modulation before tuning, or
-  move the tuner to the front of the board. See `gear/boss-tuner.md`.
-- **Amp → TX-6:** TX-6 inputs are 3.5mm stereo line-level. Use the amp's line,
-  headphone, or DI output with a 1/4in → 3.5mm cable and keep the TX-6 channel
-  gain low at first. Confirm which output once the amp model is known.
+- **BOSS tuner:** not drawn. Whether it's still on the board is TODO (see
+  `gear/boss-tuner.md`).
+- **Chroma Console jacks:** they're printed INPUT L / R and OUTPUT L / R; with
+  a mono guitar, either input and either output works
+  ([Chroma Console manual p43](https://cdn.shopify.com/s/files/1/0920/2928/8752/files/CC_manual_WEB.pdf?v=1758823440#page=43)).
+- **Amp → TX-6:** the Micro Terror's HEADPHONES jack (1/4in, with CabSim) is
+  also meant for connecting to a mixer
+  ([Micro Terror manual p3](https://cdn.shopify.com/s/files/1/0943/5250/7206/files/Micro_Terror_-_Word_Manual_2025_V1.0_EN.pdf?v=1758622989#page=3)).
+  Use a 1/4in → 3.5mm cable, pick **mono** when the TX-6 asks for the input
+  mode, and start with the amp volume and channel gain low. With nothing in
+  HEADPHONES, the amp needs a speaker cabinet connected (same page). Details:
+  `gear/orange-micro-terror.md`.
 - **Kalimba options:** its 1/4in out can go into the front of the pedalboard
   (to use the Chroma Console on it) or straight into a free TX-6 channel via a
   1/4in → 3.5mm cable.

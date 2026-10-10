@@ -48,6 +48,33 @@ def test_inventory_has_no_manual_links_left():
     assert not [g["id"] for g in inv["gear"] if "manual_pdf" in g]
 
 
+def test_inventory_references_resolve():
+    inv = yaml.safe_load((manuals.REPO_ROOT / "gear" / "inventory.yaml").read_text(encoding="utf-8"))
+    ids = {g["id"] for g in inv["gear"]}
+    for g in inv["gear"]:
+        target = str(g.get("connects_to", "TODO"))
+        assert target in ids or target.startswith("TODO"), (g["id"], target)
+        assert (manuals.REPO_ROOT / g["details"]).exists(), (g["id"], g["details"])
+
+
+def test_every_gear_item_has_a_manual():
+    inv = yaml.safe_load((manuals.REPO_ROOT / "gear" / "inventory.yaml").read_text(encoding="utf-8"))
+    covered = {gid for e in manuals.load_registry() for gid in manuals.gear_of(e)}
+    assert {g["id"] for g in inv["gear"]} - covered == set()
+
+
+def test_registered_aeq210tf_pattern_flags_a_revision(monkeypatch):
+    entry_ = manuals.resolve_one(manuals.load_registry(), "ibanez-aeq210tf-manual")
+    base = "http://www.hoshinogakki.co.jp/pdf/ibanez/manual/en/ag/acos_guitar_preamp_AEQ210TF_EN.pdf"
+    page = f'<a href="{base}">AEQ210TF</a>'
+    monkeypatch.setattr(manuals, "get_html_cached", lambda url: (page, url, []))
+    monkeypatch.setattr(manuals, "download", offline_download)
+    assert manuals.discover(entry_) == []
+    page += f'<a href="{base.replace("_EN.pdf", "_Ver2_EN.pdf")}">AEQ210TF</a>'
+    (finding,) = manuals.discover(entry_)
+    assert finding.status == "NEWER" and finding.updates["url"].endswith("AEQ210TF_Ver2_EN.pdf")
+
+
 def test_validate_reports_problems():
     known = {"op-1-field"}
     bad = [
