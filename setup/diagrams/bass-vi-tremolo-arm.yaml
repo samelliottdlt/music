@@ -1,0 +1,40 @@
+# Bass VI: fitting the push-in tremolo arm ("whammy bar"), on Fender's official drawings.
+# The full write-up with citations is in gear/bass-vi.md ("Tremolo arm (whammy bar)").
+#
+# Render it (PNG goes to out/visuals/, gitignored; never commit it, the drawings are Fender's):
+#   uv run .github/skills/music-setup/scripts/diagram.py setup/diagrams/bass-vi-tremolo-arm.yaml
+title: "Bass VI: fitting the tremolo arm"
+subtitle: It's a push-in arm (it doesn't screw in). Drawings from Fender's vintage manual; Sam's reissue may differ in detail.
+nodes:
+  - id: find
+    label: 1  Find the arm
+    note: "Fender ships it with the bass:\ncheck the Deluxe Gig Bag\nmissing? ask the dealer\n(Fender Consumer Relations\nsells replacement arms)"
+    col: 0
+    row: 0
+  - id: where
+    label: 2  Where it goes
+    note: "the tremolo plate behind the bridge,\non the side nearest the knobs"
+    col: 1
+    row: 0
+    height: 380
+    image: {manual: fender-bass-vi-1962, page: 3, box: [0.67, 0.13, 0.94, 0.73]}
+    highlights:   # page_box = page fractions, read off `manuals.py page fender-bass-vi-1962 3 --grid`
+      - {page_box: [0.776, 0.558, 0.804, 0.592], label: arm goes in here, shape: circle, label_at: below}
+  - id: plate
+    label: 3  Push it straight into the sleeve
+    note: "trem-lock: leave it released for vibrato\n(lock = press the arm down, slide the button\ntoward the spring screw; for restringing)\nspring (tension) screw: tighter = pitch up, retune"
+    col: 2
+    row: 0
+    height: 380
+    image: {manual: fender-bass-vi-1962, page: 5, box: [0.62, 0.40, 0.97, 0.93]}
+    highlights:   # page fractions, read off `manuals.py page fender-bass-vi-1962 5 --grid`
+      - {page_box: [0.792, 0.562, 0.832, 0.628], label: arm sleeve, shape: circle, label_at: right}
+      - {page_box: [0.732, 0.503, 0.779, 0.552], label: trem-lock button, shape: circle, label_at: above}
+      - {page_box: [0.743, 0.574, 0.772, 0.606], label: spring screw, shape: circle, label_at: left}
+edges:
+  - {from: find, to: where}
+  - {from: where, to: plate, label: close-up}
+sources:
+  - "Push-in tremolo arm, tremolo lock button, Deluxe Gig Bag: Fender's Vintera III Early '60s Bass VI product page.
+    The arm ships with the instrument (missing: dealer; replacements: Consumer Relations): Fender support."
+  - "Photo (p3), arm sleeve, trem-lock and spring tension screw (p5, Figure B): Fender's vintage Bass VI manual."

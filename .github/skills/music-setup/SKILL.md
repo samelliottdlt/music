@@ -125,10 +125,15 @@ the inventory, say in one line which device you took it to be, and carry on.
    notes, downloads pages), use `web_fetch` / `web_search` scoped to the
    vendor's site (Teenage Engineering guide pages are JS-rendered and often
    fetch poorly; the registered PDFs don't have that problem). Fender's
-   product pages answer scripted fetches with 403 (eu.fender.com,
-   fender.com/en-US) or only the marketing blurb (uk.fender.com): their spec
-   tables are rendered by JavaScript, so don't retry. Use the device file
-   (its specs were taken from there) or `web_search`.
+   product pages give `web_fetch` only the marketing blurb and plain `curl`
+   a 403, but `curl -sL -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64)
+   AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
+   https://www.fender.com/products/<handle>` (eu.fender.com too) returns the
+   full HTML, including the spec list and the included case/gig bag: grep it.
+   Or use the device file (its specs were taken from there). Fender support
+   articles: search
+   `https://support.fender.com/api/v2/help_center/articles/search.json?query=…`,
+   read `https://support.fender.com/api/v2/help_center/en-us/articles/<id>.json`.
 
    **Tone questions** ("too bassy", "thin", "harsh", "make it sound
    like…"): start from "Shaping the tone" in `setup/signal-chain.md`, which
