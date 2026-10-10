@@ -5,11 +5,11 @@
 # Render it (PNG goes to out/visuals/, gitignored; never commit it, the drawings are TE's):
 #   uv run .github/skills/music-setup/scripts/diagram.py setup/diagrams/current-rig.yaml
 title: Sam's rig — current signal chain
-subtitle: Everything goes into the TX-6; the OB-4 is the monitor. TX-6 channel numbers are still TODO.
+subtitle: Everything goes into the TX-6, and the OB-4 is the only speaker (no amp cabinet). TX-6 channel numbers are still TODO.
 nodes:
   - {id: strings, label: "Bass VI · Jaguar\nTelecaster · Ibanez TOD10N", note: one at a time, col: 0, row: 0}
   - {id: chroma, label: Chroma Console, col: 1, row: 0}
-  - {id: amp, label: Orange Micro Terror, note: amp head, col: 2, row: 0}
+  - {id: amp, label: Orange Micro Terror, note: "amp head, no speaker cabinet:\nkeep HEADPHONES plugged in", col: 2, row: 0}
   - id: op1
     label: OP-1 field
     col: 0
@@ -33,7 +33,7 @@ nodes:
     image: {manual: tx-6-guide, page: 113, box: [0.418, 0.598, 0.548, 0.852]}
   - id: ob4
     label: OB-4
-    note: speaker
+    note: the only speaker
     col: 3
     row: 1
     height: 190

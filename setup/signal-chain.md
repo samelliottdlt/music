@@ -5,9 +5,9 @@ Last updated: 2026-10-10
 ```mermaid
 flowchart LR
     subgraph Strings
-        BVI[Fender Bass VI]
-        JAG[Fender Jaguar]
-        TELE[Fender Telecaster]
+        BVI[Fender Vintera III<br/>Early '60s Bass VI]
+        JAG[Fender Jaguar<br/>Japan, ~2007–08]
+        TELE[Fender Standard<br/>Telecaster]
         IBZ[Ibanez TOD10N<br/>nylon, acoustic-electric]
     end
 
@@ -16,13 +16,13 @@ flowchart LR
     end
 
     BVI & JAG & TELE & IBZ -->|1/4in, one at a time| CHROMA
-    CHROMA --> AMP[Orange Micro Terror<br/>amp head]
-    AMP -->|HEADPHONES out, CabSim<br/>never the speaker outputs| TX6
+    CHROMA --> AMP[Orange Micro Terror<br/>amp head, no speaker cab]
+    AMP -->|HEADPHONES out, CabSim<br/>keep plugged in while the amp is on<br/>never the speaker outputs| TX6
 
     OP1[OP-1 field] -->|3.5mm stereo| TX6
     OPXY[OP-XY] -->|3.5mm stereo| TX6
 
-    TX6[TX-6 mixer] -->|main out 3.5mm| OB4[OB-4 speaker]
+    TX6[TX-6 mixer] -->|main out 3.5mm| OB4[OB-4<br/>the only speaker]
 
     KAL[Colour Palette kalimba]:::notconnected
 
@@ -42,7 +42,7 @@ keep it in sync with this file).
 | Orange Micro Terror | HEADPHONES (1/4in, CabSim) | TX-6 | channel TODO, mono mode | 1/4in → 3.5mm | **never** the speaker outputs |
 | OP-1 field | 3.5mm out | TX-6 | channel TODO | 3.5mm stereo | |
 | OP-XY | 3.5mm out | TX-6 | channel TODO | 3.5mm stereo | |
-| TX-6 | main out | OB-4 | line in (back) | 3.5mm stereo, 3-pole | |
+| TX-6 | main out | OB-4 | line in (top panel) | 3.5mm stereo, 3-pole | the only speaker |
 | Colour Palette kalimba | 1/4in mono | — | — | — | not in the chain yet |
 
 ## TX-6 channel map
@@ -58,8 +58,9 @@ keep it in sync with this file).
 
 ## Known issues / notes
 
-- **BOSS tuner:** not drawn. Whether it's still on the board is TODO (see
-  `gear/boss-tuner.md`).
+- **BOSS TU-3S tuner:** not drawn. Whether it's still on the board is TODO.
+  If it is, it goes first, before the Chroma Console: its manual says other
+  effects must come after it (see `gear/boss-tuner.md`).
 - **Chroma Console jacks:** they're printed INPUT L / R and OUTPUT L / R; with
   a mono guitar, either input and either output works
   ([Chroma Console manual p43](https://cdn.shopify.com/s/files/1/0920/2928/8752/files/CC_manual_WEB.pdf?v=1758823440#page=43)).
@@ -67,9 +68,12 @@ keep it in sync with this file).
   also meant for connecting to a mixer
   ([Micro Terror manual p3](https://cdn.shopify.com/s/files/1/0943/5250/7206/files/Micro_Terror_-_Word_Manual_2025_V1.0_EN.pdf?v=1758622989#page=3)).
   Use a 1/4in → 3.5mm cable, pick **mono** when the TX-6 asks for the input
-  mode, and start with the amp volume and channel gain low. With nothing in
-  HEADPHONES, the amp needs a speaker cabinet connected (same page). Details:
-  `gear/orange-micro-terror.md`.
+  mode, and start with the amp volume and channel gain low.
+- **No speaker cabinet:** the OB-4 is the only speaker. The manual requires a
+  speaker cabinet whenever nothing is plugged into HEADPHONES
+  ([Micro Terror manual p3](https://cdn.shopify.com/s/files/1/0943/5250/7206/files/Micro_Terror_-_Word_Manual_2025_V1.0_EN.pdf?v=1758622989#page=3)),
+  so **keep the HEADPHONES → TX-6 cable plugged in whenever the amp is on**.
+  Details: `gear/orange-micro-terror.md`.
 - **Kalimba options:** its 1/4in out can go into the front of the pedalboard
   (to use the Chroma Console on it) or straight into a free TX-6 channel via a
   1/4in → 3.5mm cable.

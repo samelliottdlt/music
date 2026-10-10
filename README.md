@@ -81,9 +81,6 @@ flowchart LR
 
 ## Open questions (fill these in to make the skill smarter)
 
-- BOSS tuner model (TU-3 / TU-3W / TU-3S?), and is it still on the pedalboard?
-- Is there a speaker cabinet for the Micro Terror? It needs one connected
-  whenever nothing is plugged into its headphones jack.
-- Bass VI, Jaguar, Telecaster variants
+- Is the BOSS TU-3S still on the pedalboard? (If so, it goes first.)
+- Jaguar: the exact model (the serial number would identify it)
 - TX-6 channel assignments
-- Confirm the kalimba is the Lottie Canto "Colour Palette"

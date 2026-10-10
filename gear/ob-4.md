@@ -1,6 +1,7 @@
 # Teenage Engineering OB-4
 
-Portable "magic radio" speaker. Used as the monitor for the TX-6 mix.
+Portable "magic radio" speaker. Sam's only speaker: it plays the TX-6 mix,
+guitar amp included (the Orange Micro Terror has no speaker cabinet).
 (TE has no "OB-6" — this is the OB-4.)
 
 ## Official docs
@@ -20,7 +21,7 @@ software version and an update button when one is available.
 
 | Input | Details |
 |-------|---------|
-| Line in | 3.5mm stereo on the back. Use a **3-pole** (TRS) cable, not 2- or 4-pole. Red blinking LED = clipping |
+| Line in | 3.5mm stereo, on the top panel next to the controls; there's none on the back (Sam checked), where the guide puts the power inlet. Use a **3-pole** (TRS) cable, not 2- or 4-pole. Red blinking LED = clipping |
 | Bluetooth | Classic (AAC) audio; BLE for volume/remote. Simple mode (1 device) or party mode (2) via orthoplay; optional auto-switch |
 | FM radio | Antenna in the handle. Can receive the **OP-1 field's FM transmitter** |
 | Disk mode | On-board functions (ambient, loop, metronome, noise…), not storage |

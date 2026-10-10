@@ -3,6 +3,15 @@
 Small guitar amp head: 20 W with a valve (12AX7/ECC83) preamp. Sam feeds the
 TX-6 from its **HEADPHONES** jack.
 
+> **No speaker cabinet: keep HEADPHONES plugged in.** Sam has no cab; the
+> OB-4 (through the TX-6) is his only speaker. The manual says that if the
+> HEADPHONES jack isn't in use, a speaker cabinet must be connected at all
+> times during use
+> ([p3](https://cdn.shopify.com/s/files/1/0943/5250/7206/files/Micro_Terror_-_Word_Manual_2025_V1.0_EN.pdf?v=1758622989#page=3)).
+> So the **HEADPHONES → TX-6 cable must be plugged in whenever the amp is
+> on**: connect it before switching the amp on, and switch the amp off
+> before unplugging it.
+
 ## Official docs
 
 - Product page: https://orangeamps.com/products/micro-terror
@@ -43,4 +52,5 @@ Specs: 20 W, valve preamp (1 × 12AX7/ECC83), output impedance 8–16 Ω.
    speaker outputs work at the same time, but if nothing is plugged into
    HEADPHONES, a speaker cabinet must be connected whenever the amp is on
    ([p3](https://cdn.shopify.com/s/files/1/0943/5250/7206/files/Micro_Terror_-_Word_Manual_2025_V1.0_EN.pdf?v=1758622989#page=3)).
-   Whether Sam has a cabinet is TODO.
+   Sam has no cabinet, so the HEADPHONES cable stays in (see the top of this
+   file).

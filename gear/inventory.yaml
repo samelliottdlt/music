@@ -8,30 +8,30 @@ last_reviewed: 2026-10-10
 gear:
   # ---------- Instruments: strings ----------
   - id: bass-vi
-    name: Fender Bass VI
+    name: Fender Vintera III Early '60s Bass VI
     category: instrument
     role: 6-string bass (tuned like a guitar, one octave lower)
-    variant: TODO  # e.g. Squier Classic Vibe, American Vintage II 1962
+    variant: Vintera III Early '60s Bass VI, Olympic White (model # 0149390305)
     outputs: ["1/4in mono instrument out"]
     connects_to: chroma-console
-    docs: https://support.fender.com/hc/en-us/articles/42585248961563-Fender-Bass-Guitar-Owner-s-Manuals
+    docs: https://eu.fender.com/products/vintera-iii-early-60s-bass-vi
     details: gear/bass-vi.md
 
   - id: jaguar
     name: Fender Jaguar
     category: instrument
     role: electric guitar
-    variant: TODO
+    variant: TODO  # made in Japan around 2007-2008, square inlays on the fretboard; the serial number would identify the model
     outputs: ["1/4in mono instrument out"]
     connects_to: chroma-console
     docs: https://www.fender.com/articles/instruments/jaguar-controls-past-and-present-what-you-need-to-know
     details: gear/jaguar.md
 
   - id: telecaster
-    name: Fender Telecaster
+    name: Fender Standard Telecaster
     category: instrument
     role: electric guitar
-    variant: TODO
+    variant: Standard Telecaster, made in Mexico (around 2016), Arctic White, maple fretboard
     outputs: ["1/4in mono instrument out"]
     connects_to: chroma-console
     docs: https://support.fender.com/hc/en-us/articles/42585217965083-Fender-Guitar-Owner-s-Manuals
@@ -60,14 +60,14 @@ gear:
 
   # ---------- Pedals ----------
   - id: boss-tuner
-    name: BOSS tuner (assumed TU-3)
+    name: BOSS TU-3S chromatic tuner
     category: effects
-    role: tuner pedal (doesn't change the sound)
-    model: TODO  # confirm TU-3 / TU-3W / TU-3S
-    placement: TODO  # still on the pedalboard? Left out of setup/signal-chain.md until confirmed
-    inputs: ["INPUT 1/4in"]
-    outputs: ["OUTPUT 1/4in (muted while tuning)", "BYPASS 1/4in (always dry)", "DC OUT 9V"]
-    docs: https://www.boss.info/us/products/tu-3/features/
+    role: tuner pedal; always on, no footswitch, output never muted (doesn't change the sound)
+    model: TU-3S
+    placement: TODO  # still on the pedalboard? If so it goes first, before the Chroma Console (TU-3S manual)
+    inputs: ["INPUT", "DC IN (BOSS PSA-series AC adaptor, sold separately)"]
+    outputs: ["OUTPUT (never muted)", "DC OUT (powers PSA-compatible pedals through a PCS-20A cord)"]
+    docs: https://www.boss.info/us/products/tu-3s/
     details: gear/boss-tuner.md
 
   - id: chroma-console
@@ -89,7 +89,7 @@ gear:
     inputs: ["INPUT 1/4in", "AUX IN 3.5mm (summed to mono)"]
     outputs: ["HEADPHONES 1/4in (with CabSim; OK into a mixer)", "SPEAKER OUTPUTS (cab 8 ohm or higher)"]
     output_used_to_mixer: HEADPHONES  # NEVER the speaker outputs
-    speaker_cabinet: TODO  # needed whenever the HEADPHONES jack isn't in use
+    speaker_cabinet: none  # the OB-4 (via the TX-6) is the only speaker, so HEADPHONES -> TX-6 must stay plugged in whenever the amp is on
     power: 15V DC 2A, included adapter only
     connects_to: tx-6
     docs: https://orangeamps.com/products/micro-terror

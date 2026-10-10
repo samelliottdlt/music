@@ -41,8 +41,7 @@
 #   verified   what was last verified upstream: date, sha256, bytes, pages, etag, last_modified
 #   notes      what an agent needs to know to use the document well
 #
-# Every gear id in gear/inventory.yaml has at least one entry. The BOSS
-# tuner's model is still TODO (TU-3 assumed): fix its entry once confirmed.
+# Every gear id in gear/inventory.yaml has at least one entry.
 
 manuals:
   # ---------- Teenage Engineering ----------
@@ -161,27 +160,28 @@ manuals:
       Shopify CDN: no ETag/Last-Modified, and the ?v= number changes whenever
       the file is replaced. Text plus raster illustrations.
 
-  - id: boss-tu-3-manual
+  - id: boss-tu-3s-manual
     gear: boss-tuner
-    title: BOSS TU-3 Chromatic Tuner owner's manual
-    short: BOSS TU-3 manual
+    title: TU-3S Owner's Manual (English)
+    short: BOSS TU-3S manual
     publisher: BOSS (Roland)
     kind: pdf
-    url: https://static.roland.com/assets/media/pdf/TU-3_OM.pdf
-    version: file dated 2016-06-29
+    url: https://static.roland.com/assets/media/pdf/TU-3S_M_eng02_W.pdf
+    version: eng02 (© 2016)
     discover:
       method: none  # the BOSS support pages are rendered by JavaScript (no link in the HTML)
     verified:
       date: 2026-10-10
-      sha256: 276b6e585f3c7fbe952a43b04f00f4bb344b9ff162c17ee5cad4f464f84bccf7
-      bytes: 3204559
-      pages: 2
-      etag: '"495e656ce942c0d4dc486106ecd7b325"'
-      last_modified: Wed, 29 Jun 2016 04:53:28 GMT
+      sha256: 1bacba1d08224c395b55a5194f8656a3bcf8c34810ac4e1ab5927833d01bd1bf
+      bytes: 341356
+      pages: 1
+      etag: '"988ac1fb67aca456fe1c9ab6b61f83cf"'
+      last_modified: Wed, 11 May 2022 15:32:33 GMT
     notes: >-
-      Sam's tuner model is still TODO (TU-3 assumed). Two very large
-      multilingual pages; English is on p1 (crop to it when rendering). It is
-      owner-password encrypted but opens, renders and searches normally.
+      One page, English only; everything (modes, settings, jacks, specs) is
+      on it. Revisions get a new file name: ..._eng01_W.pdf is the older one,
+      and ..._eng03_W.pdf answered 403 on 2026-10-10, so try that by hand now
+      and then. Product page: https://www.boss.info/us/products/tu-3s/
 
   - id: orange-micro-terror-manual
     gear: orange-micro-terror
@@ -211,46 +211,57 @@ manuals:
   # ---------- Instruments ----------
   - id: fender-electric-guitar-manual
     gear: [jaguar, telecaster]
-    title: Owner's Manual for Fender Guitars (English)
+    title: Owner's Manual for Fender Guitars
     short: Fender electric guitar manual
     publisher: Fender
     kind: pdf
-    url: https://www.fmicassets.com/Damroot/Original/10001/leg_gtr_2013_Fender_Electric_Guitars_Owners_Manual_%28English%29.pdf
-    version: "2013"
+    url: https://www.fmicassets.com/Damroot/Original/10066/OM_Fender-Electric-Guitar_EN.pdf
+    version: file dated 2024-10-01
     discover:
-      page: https://support.fender.com/hc/en-us/articles/42585217965083-Fender-Guitar-Owner-s-Manuals
+      page: https://eu.fender.com/products/player-ii-telecaster
       method: link
-      match: 'https://www\.fmicassets\.com/Damroot/Original/10001/leg_gtr_(\d{4})_[^"''\s<>]*Manual[^"''\s<>]*English[^"''\s<>]*\.pdf'
+      match: 'https://www\.fmicassets\.com/Damroot/Original/\d+/[^"''\s<>]*Electric[-_]Guitar[^"''\s<>]*\.pdf'
     verified:
       date: 2026-10-10
-      sha256: 6dc1740b9810a251f9bf14db6acc6f4721be4ed7a3bedec8da83f4cd13e72767
-      bytes: 4934185
-      pages: 36
-      etag: '"78ed019bc5bd9ac5c399ed204007ab26"'
-      last_modified: Tue, 09 Jan 2018 16:07:15 GMT
-    notes: General Fender electric guitar manual (care, setup, adjustments), not model specific.
+      sha256: 1bcf380c7307823c4b0c5690df34f7adf4e50d911efaa235df097d9a3235d07b
+      bytes: 4890281
+      pages: 34
+      etag: '"979024ceacb94108026255a6526e3bf4"'
+      last_modified: Tue, 01 Oct 2024 08:07:45 GMT
+    notes: >-
+      Fender's current general electric guitar manual (care, setup and
+      adjustments such as the truss rod on p23), not model specific.
+      Linked from current product pages (discovery uses the Player II
+      Telecaster page). The server labels it "document/pdf"; it's a normal
+      PDF. Replaced the 2013 edition (leg_gtr_2013_..., still on Fender's
+      legacy manuals page) after `check` reported this one as NEWER on
+      2026-10-10.
 
   - id: fender-bass-manual
     gear: bass-vi
-    title: Owner's Manual for Fender Bass Guitars (English)
+    title: Owner's Manual for Fender Bass Guitars
     short: Fender bass manual
     publisher: Fender
     kind: pdf
-    url: https://www.fmicassets.com/Damroot/Original/10001/OM_leg_bass_2013_Fender_Bass_Guitars_Owners_Manual_English.pdf
-    version: "2013"
+    url: https://www.fmicassets.com/Damroot/Original/10001/Fender_BassGuitars_Manual.pdf
+    version: file dated 2023-08-24
     discover:
-      method: none  # the bass manuals list page answers 403 to non-browser clients
+      page: https://eu.fender.com/products/vintera-iii-early-60s-bass-vi
+      method: link
+      match: 'https://www\.fmicassets\.com/Damroot/Original/\d+/[^"''\s<>]*Bass[-_]?Guitars?[^"''\s<>]*\.pdf'
     verified:
       date: 2026-10-10
-      sha256: 9429f19953368c564e579460752dec7aa89736dbd9a53c394f4f4c85d0b4c243
-      bytes: 4092096
-      pages: 36
-      etag: '"3ff4768692d5660a07abca78fa6c5198"'
-      last_modified: Tue, 09 Jan 2018 21:18:43 GMT
+      sha256: eb7833a0a9002b9c0d359fb1b40a49f91992fa12f79c38d6887b8d42b6413cb5
+      bytes: 4037975
+      pages: 34
+      etag: '"fc9f203453797f4b8a45e15ad09f85f4"'
+      last_modified: Thu, 24 Aug 2023 22:30:24 GMT
     notes: >-
-      General Fender bass manual. Listed on
-      https://support.fender.com/hc/en-us/articles/42585248961563-Fender-Bass-Guitar-Owner-s-Manuals
-      (open it in a browser to look for a newer edition).
+      Fender's current general bass manual (care, setup and adjustments such
+      as intonation on p27), linked under Downloads on the
+      Vintera III Early '60s Bass VI page (Sam's bass). Replaced the 2013
+      edition (OM_leg_bass_2013_...) after `check` reported this one as NEWER
+      on 2026-10-10.
 
   - id: fender-bass-vi-1962
     gear: bass-vi
@@ -274,8 +285,9 @@ manuals:
     notes: >-
       Vintage instruction manual, scanned (no text layer): read it visually.
       Same file as .../OM_leg_bass_Bass_VI_1962.pdf on the bass manuals page
-      (the scan's own file name says 1966). Sam's Bass VI variant is TODO;
-      modern models may differ.
+      (the scan's own file name says 1966). Sam's bass is a modern reissue
+      (Vintera III Early '60s Bass VI): use its product page and
+      fender-bass-manual first; details here may differ.
 
   - id: fender-jaguar-vintage
     gear: jaguar
@@ -297,8 +309,9 @@ manuals:
       etag: '"129818576f21a18463e2d459fe50e9fb"'
       last_modified: Tue, 09 Jan 2018 16:06:36 GMT
     notes: >-
-      Scanned (no text layer), with controls diagrams: read it visually.
-      Sam's Jaguar variant is TODO; signature/modern models may differ.
+      Scanned (no text layer), with controls diagrams: read it visually. It
+      covers the original Jaguar; Sam's is a Japanese-made Jaguar from around
+      2007-2008 (exact model TODO), so details may differ.
 
   - id: ibanez-acoustic-manual
     gear: ibanez-acoustic

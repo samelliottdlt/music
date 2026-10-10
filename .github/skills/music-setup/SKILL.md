@@ -168,7 +168,8 @@ points, never finished pieces.
 - Gear added/removed/replaced → update inventory, signal chain, device file,
   `setup/diagrams/current-rig.yaml`, and its manuals in `gear/manuals.yaml`
   (`fetch <id>` prints the `verified` block to paste).
-- Unknown fields (e.g. tuner model, guitar variants) are marked `TODO` in the
-  inventory. If Sam mentions one, fill it in and research its docs.
+- Unknown fields (e.g. the TX-6 channel map, the Jaguar's exact model) are
+  marked `TODO` in the inventory. If Sam mentions one, fill it in and research
+  its docs.
 - Keep device files in your own words with links to official sources; don't
   paste large chunks of manuals.

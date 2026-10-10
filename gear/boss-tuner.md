@@ -1,38 +1,67 @@
-# BOSS tuner (assumed TU-3)
+# BOSS TU-3S chromatic tuner
 
-Model is **TODO** — confirm TU-3, TU-3W (Waza Craft, switchable true bypass)
-or TU-3S (no footswitch, always-on). Info below is for the TU-3.
+Sam's tuner is the **TU-3S**. It's on whenever its AC adaptor is connected,
+it has no footswitch, and its OUTPUT is never muted
+([TU-3S manual](https://static.roland.com/assets/media/pdf/TU-3S_M_eng02_W.pdf#page=1);
+everything below is from that one page). Whether it's still on the
+pedalboard is **TODO**, so it's left out of `setup/signal-chain.md` for now.
 
 ## Official docs
 
-- Product page: https://www.boss.info/us/products/tu-3/features/
-- Owner's manual PDF: `boss-tu-3-manual` in `gear/manuals.yaml` (English is
-  on PDF p1)
+- Product page: https://www.boss.info/us/products/tu-3s/
+- Owner's manual (one page): `boss-tu-3s-manual` in `gear/manuals.yaml`
 
-No firmware — it's an analog-style pedal; nothing to update.
+The manual has no firmware or update procedure.
 
-## Jacks
+## Jacks and power
 
 | Jack | What it does |
 |------|--------------|
-| INPUT | Instrument in |
-| OUTPUT | Through signal — **muted while tuning** |
-| BYPASS | Always the dry input signal, even while tuning |
-| DC OUT | 9V out to power other BOSS-style pedals (only when the TU-3 runs on a BOSS PSA adapter) |
-| DC IN | 9V adapter in. Also runs on a 9V battery |
+| INPUT | The guitar or bass to tune |
+| OUTPUT | To effects or the amp. The tuner is always on, and the sound here is never muted |
+| DC IN | BOSS PSA-series AC adaptor (sold separately). That's the only power supply listed: there's no battery |
+| DC OUT | While the AC adaptor is in, powers other PSA-compatible pedals through a PCS-20A parallel DC cord (optional) |
 
-## Modes
+Current draw: 30 mA at 9 V, or 85 mA in High Brightness mode. Don't use
+cables with a built-in resistor.
 
-Chromatic, Guitar, Bass, plus flat-tuning modes for down-tuned instruments and
-adjustable reference pitch (around A=440). See the manual for exact ranges and
-button combos.
+## Modes (MODE button)
 
-- **Bass VI:** tune like a guitar one octave down (E1 A1 D2 G2 B2 E3). Use
-  Chromatic or Guitar mode; check which handles the low register best.
+| Mode | Use it for |
+|------|------------|
+| Chromatic | All twelve notes; the display shows the note name |
+| Chromatic flat | The same, one (♭) or two (2) semitones lower |
+| Guitar | Tuning by guitar string number (7-string guitars too) |
+| Guitar flat | Guitar, one to six semitones lower |
+| Bass | Tuning by bass string number (its extra strings are Lo-B and Hi-C) |
+| Bass flat | Bass, one to three semitones lower |
 
-## Placement
+Range C0–C8, accurate to ±1 cent. Play one note: tune until both tuning
+guide indicators light and the center of the meter is green.
 
-**TODO**: is it still on the pedalboard? The Chroma Console is now the only
-pedal in the chain, so the tuner is left out of `setup/signal-chain.md` until
-Sam confirms. If it goes back on the board, put it first (before the Chroma
-Console) so it hears the dry instrument.
+- **Bass VI** (E1 A1 D2 G2 B2 E3): use **Chromatic**, which shows the note
+  name for any note. The string-number modes are laid out for regular
+  guitars and basses.
+
+## Settings
+
+- **Meter style:** the STREAM/CENT button switches between CENT (the
+  default; the center lights green when in tune) and STREAM.
+- **Reference pitch** (436–445 Hz, 440 by default): press MODE and
+  STREAM/CENT together, then MODE = +1 Hz and STREAM/CENT = −1 Hz.
+- **Accu-Pitch Sign** (the lights stream to the center once tuning is
+  stable): hold STREAM/CENT while connecting the AC adaptor, then press
+  STREAM/CENT to turn it on or off.
+- **High Brightness** (for outdoors): hold STREAM/CENT for 2 seconds;
+  do it again to go back.
+
+Mode, meter style, reference pitch and Accu-Pitch Sign stay stored after
+power-off.
+
+## Placement and power order
+
+- **TODO:** is it still on the pedalboard? If it is, it goes **first**,
+  before the Chroma Console: the manual says other effects must come after
+  the TU-3S, or it can't tune correctly.
+- Turn the volume down and power everything off before connecting. Power
+  the guitar amp on **last**, and off **first**.

@@ -7,7 +7,7 @@
 title: Recording mode — the whole rig onto the OP-1 field's tape
 subtitle: The OP-1 field is the last stop, so its output never loops back into the TX-6 (no feedback).
 nodes:
-  - {id: amp, label: Orange Micro Terror, note: "HEADPHONES out (CabSim)\nnever the speaker outputs", col: 0, row: 0}
+  - {id: amp, label: Orange Micro Terror, note: "HEADPHONES out (CabSim)\nnever the speaker outputs\nno cab: keep it plugged in", col: 0, row: 0}
   - {id: opxy, label: OP-XY, note: 3.5 mm out, col: 0, row: 1}
   - {id: kalimba, label: Kalimba, note: optional, style: dashed, col: 0, row: 2}
   - id: tx6
