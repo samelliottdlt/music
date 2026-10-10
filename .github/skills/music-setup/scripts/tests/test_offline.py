@@ -93,6 +93,26 @@ def test_validate_reports_problems():
     assert manuals.validate([entry()], known) == []
 
 
+def test_page_index_expands_ranges_and_feeds_search():
+    e = entry(kind="image-guide", verified={"pages": 6},
+              page_index={1: "cover", "2-3": "tremolo and bridge", 3: "Fender Mute", "5-6": "warranty"})
+    assert manuals.page_index(e) == {1: "cover", 2: "tremolo and bridge", 3: "tremolo and bridge · Fender Mute",
+                                     5: "warranty", 6: "warranty"}
+    texts = manuals.index_texts(e)
+    assert len(texts) == 6 and texts[3] == ""
+    assert [h["page"] for h in manuals.search_pages(texts, "mute")] == [3]
+    assert manuals.page_index(entry()) == {} and manuals.index_texts(entry()) == []
+
+
+def test_validate_reports_page_index_problems():
+    pages = {"verified": {"pages": 4}}
+    bad = [entry(id="a", page_index=["cover"]), entry(id="b", page_index={9: "past the end"}, **pages),
+           entry(id="c", page_index={"one": "cover"}), entry(id="d", page_index={2: ""})]
+    problems = manuals.validate(bad, None)
+    assert len(problems) == 4 and all("page_index" in p for p in problems)
+    assert manuals.validate([entry(page_index={"1-4": "all of it"}, **pages)], None) == []
+
+
 def test_resolve_by_manual_id_gear_id_and_all():
     entries = manuals.load_registry()
     assert [e["id"] for e in manuals.resolve(entries, ["op-1-field-guide"])] == ["op-1-field-guide"]
@@ -278,6 +298,32 @@ def test_compose_local_image_flattens_rotates_and_highlights(tmp_path):
     assert manuals.flatten(Image.new("RGBA", (2, 2), (0, 0, 0, 0))).getpixel((0, 0)) == (255, 255, 255)
 
 
+def test_page_box_highlights_label_at_and_focus(tmp_path):
+    Image.new("RGB", (400, 200), "white").save(tmp_path / "page.png")
+    node = {"id": "img", "label": "drawing", "image": {"file": "page.png", "box": [0.5, 0.5, 1, 1]}, "height": 100}
+    spec = {"nodes": [dict(node, highlights=[{"page_box": [0.6, 0.6, 0.7, 0.8], "label": "knob", "label_at": "right"}])]}
+    layout: dict = {}
+    image, _ = diagram.compose(spec, tmp_path, [], layout)
+    x0, y0, x1, y1 = layout["img"]
+    mark = image.crop((round(x0), round(y0), round(x1), round(y1)))
+    # page_box (0.6..0.7, 0.6..0.8) of the page is (0.2..0.4, 0.2..0.6) of the crop: the outline starts there
+    assert mark.getpixel((round(0.2 * mark.width), round(0.4 * mark.height))) == diagram.ACCENT
+    for hl, match in (({"page_box": [0.1, 0.1, 0.2, 0.2]}, "outside the image's crop box"),
+                      ({"box": [0.1, 0.1, 0.2, 0.2], "label_at": "middle"}, "label_at must be one of"),
+                      ({"label": "no box"}, "needs a box")):
+        with pytest.raises(diagram.SpecError, match=match):
+            diagram.compose({"nodes": [dict(node, highlights=[hl])]}, tmp_path, [])
+    with pytest.raises(diagram.SpecError, match="unrotated"):
+        diagram.compose({"nodes": [dict(node, rotate=90, highlights=[{"page_box": [0.6, 0.6, 0.7, 0.8]}])]},
+                        tmp_path, [])
+    (tmp_path / "spec.yaml").write_text(yaml.safe_dump(spec), encoding="utf-8")
+    out = tmp_path / "d.png"
+    assert diagram.main([str(tmp_path / "spec.yaml"), "-o", str(out), "--focus", "img"]) == 0
+    with Image.open(tmp_path / "d-img.png") as zoom:
+        assert zoom.width > x1 - x0
+    assert diagram.main([str(tmp_path / "spec.yaml"), "-o", str(out), "--focus", "nope"]) == 1
+
+
 def test_labels_stay_off_nodes():
     spec = {"nodes": [{"id": "a", "label": "Amp", "col": 0, "row": 0}, {"id": "tx", "label": "TX-6", "col": 1, "row": 1},
                       {"id": "o", "label": "OP-XY", "col": 0, "row": 1}, {"id": "b", "label": "OB-4", "col": 2, "row": 1}],
@@ -302,7 +348,7 @@ def test_recipes_reference_registered_manual_pages(path):
             assert 1 <= img["page"] <= registry[img["manual"]]["verified"]["pages"]
             manuals.parse_box(img.get("box"))
         for hl in n.get("highlights", []):
-            manuals.parse_box(hl["box"])
+            manuals.parse_box(hl.get("box") or hl["page_box"])
 
 
 if __name__ == "__main__":

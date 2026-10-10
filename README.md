@@ -47,6 +47,7 @@ dependencies automatically:
 ```powershell
 uv run .github/skills/music-setup/scripts/manuals.py list
 uv run .github/skills/music-setup/scripts/manuals.py search op-1-field "input"
+uv run .github/skills/music-setup/scripts/manuals.py search tx-6 "eq"   # image-only guides: matched via their page index
 uv run .github/skills/music-setup/scripts/manuals.py text op-1-field-guide 12
 uv run .github/skills/music-setup/scripts/manuals.py check   # links alive? anything newer?
 uv run .github/skills/music-setup/scripts/tests/test_offline.py   # offline smoke tests
@@ -59,13 +60,15 @@ that matters, or composes a picture: official drawings and boxes joined by
 arrows labelled with the cable and the jack names, with the right jack
 highlighted. Images are written to `out/` (gitignored, never committed: they
 contain the vendors' drawings); diagrams worth keeping are committed as small
-YAML recipes in `setup/diagrams/`, e.g. the current rig and recording mode.
+YAML recipes in `setup/diagrams/`, e.g. the current rig, recording mode and
+the Bass VI tone recipe.
 
 ```powershell
 uv run .github/skills/music-setup/scripts/manuals.py page op-1-field-guide 4 --grid     # plan a crop
 uv run .github/skills/music-setup/scripts/manuals.py page op-1-field-guide 4 --box 0.556,0.585,0.765,0.945
 uv run .github/skills/music-setup/scripts/manuals.py sheet tx-6-guide                    # page thumbnails
 uv run .github/skills/music-setup/scripts/diagram.py setup/diagrams/recording-mode.yaml
+uv run .github/skills/music-setup/scripts/diagram.py setup/diagrams/bass-vi-guitar-tone.yaml --focus bass  # + one node enlarged
 ```
 
 ## Current setup

@@ -42,7 +42,15 @@ kalimba sources. TE's "field audio" cables are slim so all six fit.
 
 ## Mixer features
 
-- Every channel: 3-band EQ + compressor; knob rows are reassignable.
+- Every channel: three parameter knobs, by default a 3-band EQ (±18 dB per
+  band): blue = high, orange = mid, white = low
+  ([TX-6 guide p29](https://assets.teenage.engineering/_img/66152ced1cfae6ae3cfe32a7_original.png),
+  [p30](https://assets.teenage.engineering/_img/66152ced1cfae6ae3cfe329a_original.png));
+  they can be reassigned. The track menu (hold shift and press a track
+  button; keep pressing to cycle) has a low-pass / high-pass filter, the EQ,
+  compressor, input gain and panning
+  ([p25](https://assets.teenage.engineering/_img/66152cee1cfae6ae3cfe32c2_original.png),
+  [p26](https://assets.teenage.engineering/_img/66152cee1cfae6ae3cfe32be_original.png)).
 - Send FX: reverb, chorus, delay. Creative FX: freeze, tape, filter, distortion.
 - DJ mode: turn it on its side; channel 1 crossfades channels 5 ↔ 6.
 - Scenes (save/recall full mixer state), built-in instrument tuner.
