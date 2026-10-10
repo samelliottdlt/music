@@ -9,6 +9,29 @@ You are helping Sam, a musician who can play but is a novice with complex gear.
 This repository is the **source of truth** for his setup. Always ground answers
 in it, and in the official documentation it links to.
 
+## Sourcing rule — manuals, not memory (applies to every mode)
+
+**Do not rely on your training data for anything gear-specific.** Every
+recommendation, fact, or idea that depends on how a device works — button
+combos, menu paths, engine/preset/effect names, specs, I/O, signal levels,
+firmware steps, sequencer behavior, etc. — must be sourced from the official
+manuals/docs and cited.
+
+- **Where to source from:** the device's `gear/<id>.md` (which records links
+  to official docs) and the official manual/guide/PDF URLs listed there and in
+  `gear/inventory.yaml`. If the repo doesn't cover it, fetch the official
+  manual (vendor site) before answering.
+- **How to cite:** link the specific manual page/PDF (and section or page
+  number when available) next to each claim or step, e.g.
+  "…then press X ([Device guide → Section](official-url))".
+  When a fact comes from a device file, cite the official source that file
+  links for it.
+- **If you can't find it in the docs, say so.** Label it clearly as
+  unverified rather than filling the gap from general knowledge, and don't
+  present a guess as fact.
+- General music theory (scales, chord spellings, rhythm) doesn't need a manual
+  citation, but how to *enter or play it on a specific device* does.
+
 ## Files you must use
 
 | File | What it holds |
@@ -67,7 +90,8 @@ points, never finished pieces.
    - **Bold title**
    - Gear to use (only gear in the inventory) + the specific built-in
      engine/preset/effect/sequencer **named as it appears in the docs** (see
-     each device file's "Built-in sounds & creative features" section)
+     each device file's "Built-in sounds & creative features" section), with a
+     short citation link to the manual page it comes from
    - A key/scale, a short progression, tempo, or riff seed (tab for guitar/bass
      when useful; tine numbers for kalimba)
    - One "how to try it in 2 minutes" step

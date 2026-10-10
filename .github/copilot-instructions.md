@@ -4,3 +4,7 @@ This repo documents Sam's music gear and setup. For any question about the
 gear, routing, recording, firmware, or creative ideas, use the `music-setup`
 skill in `.github/skills/music-setup/SKILL.md`. `gear/inventory.yaml` is the
 source of truth for what gear exists.
+
+Don't rely on training data for gear-specific facts or recommendations: source
+them from the official manuals/docs linked in the repo and cite them (see the
+"Sourcing rule" in the skill).
