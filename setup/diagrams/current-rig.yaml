@@ -18,14 +18,14 @@ nodes:
     row: 1
     height: 120
     rotate: -90
-    image: {manual: op-1-field-guide, page: 3, box: [0.598, 0.15, 0.702, 0.972]}
+    image: {manual: op-1-field-guide, page: 3, box: [0.602, 0.085, 0.715, 0.915]}
   - id: opxy
     label: OP-XY
     col: 0
     row: 2
     height: 120
     rotate: -90
-    image: {manual: op-xy-guide, page: 5, box: [0.13, 0.14, 0.41, 0.69]}
+    image: {manual: op-xy-guide, page: 5, box: [0.13, 0.12, 0.415, 0.68]}
   - id: tx6
     label: TX-6
     note: mixer

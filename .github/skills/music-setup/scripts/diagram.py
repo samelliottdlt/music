@@ -3,7 +3,7 @@
 # requires-python = ">=3.10"
 # dependencies = ["pymupdf>=1.24", "pillow>=10.1", "pyyaml>=6"]
 # ///
-"""Make simple, useful diagrams: boxes and official drawings joined by labelled arrows.
+r"""Make simple, useful diagrams: boxes and official drawings joined by labelled arrows.
 
   uv run .github/skills/music-setup/scripts/diagram.py setup/diagrams/recording-mode.yaml
   uv run .github/skills/music-setup/scripts/diagram.py spec.yaml -o out/visuals/name.png
