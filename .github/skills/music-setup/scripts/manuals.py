@@ -1,19 +1,22 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.10"
-# dependencies = ["pymupdf>=1.24", "pyyaml>=6"]
+# dependencies = ["pymupdf>=1.24", "pillow>=10.1", "pyyaml>=6"]
 # ///
-"""Official manuals for Sam's gear: list, fetch, check, search and cite them.
+"""Official manuals for Sam's gear: list, fetch, check, search, cite, and look at them.
 
 The registry of official links is gear/manuals.yaml. Files are downloaded on
 demand into a cache OUTSIDE the repo (~/.cache/music-manuals, override with
-MUSIC_MANUALS_CACHE) and are never committed.
+MUSIC_MANUALS_CACHE) and are never committed. Rendered pages go to out/visuals/
+(gitignored): never commit or upload images rendered from manuals.
 
   uv run .github/skills/music-setup/scripts/manuals.py list
   uv run .github/skills/music-setup/scripts/manuals.py fetch <manual-id|gear-id|all> [--refresh]
   uv run .github/skills/music-setup/scripts/manuals.py check [manual-id|gear-id ...]
   uv run .github/skills/music-setup/scripts/manuals.py search <manual-id|gear-id|all> "terms"
   uv run .github/skills/music-setup/scripts/manuals.py text <manual-id> <page>
+  uv run .github/skills/music-setup/scripts/manuals.py page <manual-id> <page> [--grid] [--box x0,y0,x1,y1] [--find "label"]
+  uv run .github/skills/music-setup/scripts/manuals.py sheet <manual-id> [--pages 100-120]
 
 Statuses: OK; NEW (entry has no `verified` block yet); CHANGED (the file at the
 official URL differs from the verified one); NEWER (the vendor publishes a
@@ -27,17 +30,21 @@ from __future__ import annotations
 import argparse
 import copy
 import datetime as dt
+import functools
 import hashlib
 import html
+import io
 import json
 import os
 import re
+import statistics
 import sys
 import tempfile
 import unicodedata
 import urllib.error
 import urllib.parse
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -549,11 +556,15 @@ def compare(entry: dict, c: Cached) -> list[Finding]:
         found.append(Finding("NEW", ["gear/manuals.yaml has no `verified` block for this entry yet"],
                              {"verified": verified_block(c.meta, kind)}))
     elif kind == "pdf" and c.meta["sha256"] != ver["sha256"]:
-        title = f", PDF title now \"{c.meta['doc_title']}\"" if c.meta.get("doc_title") else ""
+        title = c.meta.get("doc_title") or ""
+        updates: dict = {"verified": verified_block(c.meta, kind)}
+        if title and str(entry.get("version", "")) not in title:
+            updates["version"] = title
         found.append(Finding("CHANGED", [
             f"the file at the official URL is not the one verified on {ver.get('date')} "
             f"(sha256 {str(ver['sha256'])[:12]}… → {c.meta['sha256'][:12]}…, "
-            f"{ver.get('pages')} → {c.meta['pages']} pages{title})"], {"verified": verified_block(c.meta, kind)}))
+            f"{ver.get('pages')} → {c.meta['pages']} pages" + (f", PDF title now \"{title}\")" if title else ")")],
+            updates))
     elif kind == "image-guide" and c.meta["ids_sha256"] != ver["ids_sha256"]:
         found.append(Finding("CHANGED", [
             f"the guide's page images changed since {ver.get('date')} ({ver.get('pages')} → "
@@ -708,8 +719,10 @@ ADVICE = {
               "discover.page or the vendor's support site, or web_search the vendor's domain), update "
               "gear/manuals.yaml by hand, then run `fetch {id} --refresh` and `check {id}`.",
     "MOVED": "Tell Sam the link moved. Update `url` in gear/manuals.yaml (snippet below), then `check {id}`.",
-    "CHANGED": "Tell Sam the manual was revised upstream. Re-verify facts cited from it in gear/*.md "
-               "(page numbers may have shifted), then update the entry in gear/manuals.yaml (snippet below).",
+    "CHANGED": "Tell Sam the manual was revised upstream. Run `check {id}` first (discovery may show a newer "
+               "official version or a moved link) before accepting this file; re-verify facts cited from it in "
+               "gear/*.md (page numbers may have shifted), then update the entry in gear/manuals.yaml "
+               "(snippet below).",
     "NEWER": "Tell Sam a newer version is published. Check it (cover/version), re-verify facts cited "
              "from the old one, update the entry in gear/manuals.yaml (snippet below), then run "
              "`fetch {id} --refresh`.",
@@ -746,7 +759,7 @@ def report(entry: dict, findings: list[Finding], summary: str = "", extra: list[
             out(f"{'':<9}Ready-to-paste replacement for the `id: {entry['id']}` entry "
                 "(edit gear/manuals.yaml by hand; keep its comments):")
             out(snippet(entry, updates))
-            if "version" in updates:
+            if "version" in updates or status in ("CHANGED", "NEWER"):
                 out(f"{'':<9}(confirm `version`/`title` against the new document itself)")
     return status
 
@@ -775,6 +788,11 @@ def is_scanned(pages: list[str]) -> bool:
     return bool(pages) and sum(len(p.strip()) > 30 for p in pages) < 0.2 * len(pages)
 
 
+TEXT_CACHE_VERSION = 2
+# Some PDFs map the "ff" ligature to "!" (Chroma Console: "e!ects", "di!erent"); repair that.
+_BROKEN_FF = re.compile(r"(?<=[A-Za-z])!(?=[a-z])")
+
+
 def page_texts(entry: dict) -> tuple[list[str], Cached]:
     """Text per PDF page, or the whole web page as one item; [] for image guides."""
     c = ensure(entry)
@@ -787,19 +805,23 @@ def page_texts(entry: dict) -> tuple[list[str], Cached]:
     tp = cpath(entry, ".text.json")
     try:
         cached = json.loads(tp.read_text(encoding="utf-8"))
-        if cached.get("sha256") == c.meta["sha256"]:
+        if cached.get("sha256") == c.meta["sha256"] and cached.get("v") == TEXT_CACHE_VERSION:
             return cached["pages"], c
     except (OSError, ValueError):
         pass
     with pymupdf.open(c.path) as doc:
-        pages = [norm(page.get_text()) for page in doc]
-    tp.write_text(json.dumps({"sha256": c.meta["sha256"], "pages": pages}), encoding="utf-8")
+        pages = [_BROKEN_FF.sub("ff", norm(page.get_text())) for page in doc]
+    tp.write_text(json.dumps({"v": TEXT_CACHE_VERSION, "sha256": c.meta["sha256"], "pages": pages}),
+                  encoding="utf-8")
     return pages, c
 
 
 def cite(entry: dict, page: int | None = None) -> str:
     if page is None or entry["kind"] == "web":
         return f"[{short(entry)}]({entry['url']})"
+    if entry["kind"] == "image-guide":
+        image_id = ensure(entry).meta["ids"][page - 1]
+        return f"[{short(entry)} p{page}]({page_image_url(entry, image_id)})"
     return f"[{short(entry)} p{page}]({entry['url']}#page={page})"
 
 
@@ -809,21 +831,27 @@ def _terms(query: str) -> tuple[str, list[str]]:
     return q, [w for w in words if w]
 
 
+def _word_rx(w: str) -> str:
+    """Terms of 1-2 letters ("in", "eq", "l") match whole words; longer ones also match as a prefix."""
+    return rf"(?<![\w*]){re.escape(w)}" + (r"(?!\w)" if len(w) <= 2 else r"\w*")
+
+
 def _snippet(text: str, start: int, end: int, words: list[str], width: int = 110) -> str:
     a, b = max(0, start - width), min(len(text), end + width)
     s = " ".join(text[a:b].split())
     for w in sorted(set(words), key=len, reverse=True):
-        s = re.sub(rf"(?<![\w*])({re.escape(w)}\w*)", r"**\1**", s, flags=re.I)
+        s = re.sub(f"({_word_rx(w)})", r"**\1**", s, flags=re.I)
     return ("…" if a else "") + s + ("…" if b < len(text) else "")
 
 
 def search_pages(pages: list[str], query: str) -> list[dict]:
-    """Pages containing every query word (word-prefix match); the exact phrase ranks higher."""
+    """Pages containing every query word (word-prefix match, whole words for 1-2 letter terms);
+    pages with the exact phrase rank higher."""
     q, words = _terms(query)
     if not words:
         return []
-    word_rx = [re.compile(rf"(?<!\w){re.escape(w)}", re.I) for w in words]
-    phrase_rx = re.compile(r"\s+".join(re.escape(w) for w in words), re.I) if len(words) > 1 else None
+    word_rx = [re.compile(_word_rx(w), re.I) for w in words]
+    phrase_rx = re.compile(r"\s+".join(_word_rx(w) for w in words), re.I) if len(words) > 1 else None
     hits = []
     for n, text in enumerate(pages, 1):
         found = [list(rx.finditer(text)) for rx in word_rx]
@@ -840,11 +868,11 @@ def search_pages(pages: list[str], query: str) -> list[dict]:
 
 
 def visual_hint(entry: dict) -> str:
-    if entry["kind"] == "image-guide":
-        return (f"{entry['id']}: its text is baked into page images, so there's no text search. Browse it "
-                f"visually: open {entry['url']} (page N = the Nth picture on that page).")
-    return (f"{entry['id']}: scanned PDF with no text layer, so there's no text search. Browse it "
-            f"visually: open {entry['url']}#page=N.")
+    what = ("its text is baked into page images" if entry["kind"] == "image-guide"
+            else "it's a scanned PDF with no text layer")
+    return (f"{entry['id']}: {what}, so there's no text search. Browse it visually: "
+            f"`manuals.py sheet {entry['id']}` (numbered thumbnails), view the sheet, then "
+            f"`manuals.py page {entry['id']} N` and read the page.")
 
 
 def cmd_search(args: argparse.Namespace) -> int:
@@ -888,6 +916,293 @@ def cmd_search(args: argparse.Namespace) -> int:
     return exit_code(statuses)
 
 
+# ------------------------------------------------------------------ visuals --
+# Rendered pages are for looking at (and composing diagrams), never for committing or uploading:
+# they're the vendors' copyrighted material. They go to out/visuals/, which is gitignored.
+
+def visuals_dir() -> Path:
+    root = REPO_ROOT if (REPO_ROOT / "gear").is_dir() else Path.cwd()
+    d = root / "out" / "visuals"
+    d.mkdir(parents=True, exist_ok=True)
+    return d
+
+
+def announce(path: Path, extra: str = "") -> None:
+    p = path.resolve()
+    out(f"wrote {p}")
+    out(f"      {p.as_uri()}" + (f"  ({extra})" if extra else ""))
+
+
+@functools.lru_cache(maxsize=None)
+def _base_font(bold: bool) -> pymupdf.Font:
+    return pymupdf.Font("hebo" if bold else "helv")
+
+
+@functools.lru_cache(maxsize=None)
+def font(size: int, bold: bool = False):
+    """Helvetica from PyMuPDF's built-in fonts: portable, and unlike Pillow's default font it has
+    → ← ↔ — · µ Ω."""
+    from PIL import ImageFont
+    return ImageFont.truetype(io.BytesIO(_base_font(bold).buffer), int(size))
+
+
+def missing_glyphs(text: str, bold: bool = False) -> set[str]:
+    return {ch for ch in text if not ch.isspace() and _base_font(bold).has_glyph(ord(ch)) == 0}
+
+
+def flatten(im):
+    """RGB on white (TE's WebP page images are transparent and turn black otherwise)."""
+    from PIL import Image
+    if im.mode in ("RGBA", "LA", "PA") or (im.mode == "P" and "transparency" in im.info):
+        im = im.convert("RGBA")
+        return Image.alpha_composite(Image.new("RGBA", im.size, "white"), im).convert("RGB")
+    return im.convert("RGB")
+
+
+def parse_box(value) -> tuple[float, float, float, float] | None:
+    """'x0,y0,x1,y1' or a list: fractions of the page/image, 0..1, top-left origin."""
+    if value is None:
+        return None
+    try:
+        parts = [float(v) for v in (value.split(",") if isinstance(value, str) else value)]
+    except (TypeError, ValueError):
+        parts = []
+    if len(parts) != 4 or not (0 <= parts[0] < parts[2] <= 1 and 0 <= parts[1] < parts[3] <= 1):
+        raise RegistryError(f"box must be x0,y0,x1,y1 with 0 <= x0 < x1 <= 1 and 0 <= y0 < y1 <= 1, got {value}")
+    return tuple(parts)  # type: ignore[return-value]
+
+
+def fmt_frac(v: float) -> str:
+    return f"{v:.3f}".rstrip("0").rstrip(".") if v not in (0, 1) else str(int(v))
+
+
+def page_total(entry: dict) -> int:
+    if entry["kind"] == "web":
+        raise RegistryError(f"{entry['id']} is a web page: no pages to render; open {entry['url']}")
+    return int(ensure(entry).meta["pages"])
+
+
+def _check_page(entry: dict, n: int) -> None:
+    total = page_total(entry)
+    if not 1 <= n <= total:
+        raise RegistryError(f"{entry['id']} has pages 1–{total}" + (" (PDF page numbers)" if entry["kind"] == "pdf"
+                                                                      else ""))
+
+
+def guide_image(entry: dict, n: int, which: str = "image"):
+    """Page n of an image guide (cached; flattened onto white)."""
+    from PIL import Image
+    _check_page(entry, n)
+    c = ensure(entry)
+    image_id = c.meta["ids"][n - 1]
+    url = page_image_url(entry, image_id, which)
+    path = c.path / f"{which}-{image_id}{Path(urllib.parse.urlparse(url).path).suffix or '.img'}"
+    if not path.exists():
+        download(url, path, expect_pdf=False)
+    with Image.open(path) as im:
+        return flatten(im)
+
+
+def render_page(entry: dict, n: int, box=None, dpi: float | None = None, max_side: int = 4000):
+    """Page n as an RGB image, optionally cropped to box (fractions). PDFs default to ~2000 px for
+    a whole page and 300 dpi for crops."""
+    from PIL import Image
+    box = parse_box(box)
+    _check_page(entry, n)
+    if entry["kind"] == "image-guide":
+        im = guide_image(entry, n)
+        if box:
+            w, h = im.size
+            im = im.crop((round(box[0] * w), round(box[1] * h), round(box[2] * w), round(box[3] * h)))
+        return im
+    with pymupdf.open(ensure(entry).path) as doc:
+        page = doc[n - 1]
+        r = page.rect
+        clip = r if not box else pymupdf.Rect(r.x0 + box[0] * r.width, r.y0 + box[1] * r.height,
+                                              r.x0 + box[2] * r.width, r.y0 + box[3] * r.height)
+        if dpi is None:
+            dpi = 300 if box else min(200.0, max(72.0, 2000 * 72 / max(r.width, r.height)))
+        longest = max(clip.width, clip.height) * dpi / 72
+        if longest > max_side:
+            dpi = dpi * max_side / longest
+        zoom = dpi / 72
+        pix = page.get_pixmap(matrix=pymupdf.Matrix(zoom, zoom), clip=clip, alpha=False)
+        return Image.frombytes("RGB", (pix.width, pix.height), pix.samples)
+
+
+def find_boxes(entry: dict, n: int, text: str) -> list[tuple[float, float, float, float]]:
+    """Where `text` is printed on PDF page n, as fractional boxes of the page."""
+    if entry["kind"] != "pdf":
+        raise RegistryError(f"--find needs a PDF with a text layer; {entry['id']} is {entry['kind']}")
+    _check_page(entry, n)
+    with pymupdf.open(ensure(entry).path) as doc:
+        page = doc[n - 1]
+        r = page.rect
+        return [((h.x0 - r.x0) / r.width, (h.y0 - r.y0) / r.height, (h.x1 - r.x0) / r.width,
+                 (h.y1 - r.y0) / r.height) for h in page.search_for(text)]
+
+
+def relative_box(inner, outer) -> tuple[float, float, float, float] | None:
+    """inner (page fractions) as fractions of the crop `outer`; None if it isn't inside it."""
+    if not outer:
+        return tuple(inner)
+    ox0, oy0, ox1, oy1 = outer
+    w, h = ox1 - ox0, oy1 - oy0
+    rel = ((inner[0] - ox0) / w, (inner[1] - oy0) / h, (inner[2] - ox0) / w, (inner[3] - oy0) / h)
+    return rel if rel[0] >= -0.01 and rel[1] >= -0.01 and rel[2] <= 1.01 and rel[3] <= 1.01 else None
+
+
+def grid_overlay(im, box=None, divisions: int = 10):
+    """Labelled grid in page fractions (lines every 1/10 of the view, ticks every 1/20) so a crop box can
+    be read straight off the picture."""
+    from PIL import Image, ImageDraw
+    x0, y0, x1, y1 = box or (0, 0, 1, 1)
+    size = max(16, min(34, round(max(im.size) / 55)))
+    f = font(size, True)
+    labels_x = [fmt_frac(x0 + i / divisions * (x1 - x0)) for i in range(divisions + 1)]
+    labels_y = [fmt_frac(y0 + i / divisions * (y1 - y0)) for i in range(divisions + 1)]
+    pad_x = round(max(f.getlength(t) for t in labels_y) + 14)
+    pad_y = size + 16
+    canvas = Image.new("RGBA", (im.width + 2 * pad_x, im.height + 2 * pad_y), "white")
+    canvas.paste(im.convert("RGBA"), (pad_x, pad_y))
+    layer = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
+    d = ImageDraw.Draw(layer)
+    for i in range(2 * divisions + 1):
+        x, y = pad_x + i / (2 * divisions) * im.width, pad_y + i / (2 * divisions) * im.height
+        if i % 2:
+            tick = (0, 110, 255, 220)
+            for a, b in (((x, pad_y), (x, pad_y + 10)), ((x, pad_y + im.height - 10), (x, pad_y + im.height)),
+                         ((pad_x, y), (pad_x + 10, y)), ((pad_x + im.width - 10, y), (pad_x + im.width, y))):
+                d.line([a, b], fill=tick, width=2)
+            continue
+        major = i % divisions == 0
+        color = (230, 0, 120, 170) if major else (0, 110, 255, 120)
+        d.line([(x, pad_y), (x, pad_y + im.height)], fill=color, width=2 if major else 1)
+        d.line([(pad_x, y), (pad_x + im.width, y)], fill=color, width=2 if major else 1)
+    canvas = Image.alpha_composite(canvas, layer).convert("RGB")
+    d = ImageDraw.Draw(canvas)
+    for i in range(divisions + 1):
+        x, y = pad_x + i / divisions * im.width, pad_y + i / divisions * im.height
+        color = (200, 0, 100) if i % (divisions // 2) == 0 else (0, 80, 210)
+        tw = f.getlength(labels_x[i])
+        d.text((x - tw / 2, 4), labels_x[i], font=f, fill=color)
+        d.text((x - tw / 2, pad_y + im.height + 6), labels_x[i], font=f, fill=color)
+        tw = f.getlength(labels_y[i])
+        d.text((pad_x - tw - 7, y - size * 0.6), labels_y[i], font=f, fill=color)
+        d.text((pad_x + im.width + 7, y - size * 0.6), labels_y[i], font=f, fill=color)
+    return canvas
+
+
+def parse_pages(spec: str | None, total: int) -> list[int]:
+    if not spec:
+        return list(range(1, total + 1))
+    pages: list[int] = []
+    for part in spec.split(","):
+        a, _, b = part.strip().partition("-")
+        lo, hi = int(a), int(b) if b else int(a)
+        if not 1 <= lo <= hi <= total:
+            raise RegistryError(f"pages must be within 1–{total}, got {part!r}")
+        pages += [p for p in range(lo, hi + 1) if p not in pages]
+    return pages
+
+
+def _thumbs(entry: dict, pages: list[int], cell: tuple[int, int]) -> list:
+    from PIL import Image
+    if entry["kind"] == "image-guide":
+        with ThreadPoolExecutor(12) as pool:
+            imgs = list(pool.map(lambda n: guide_image(entry, n, "thumb"), pages))
+    else:
+        imgs = []
+        with pymupdf.open(ensure(entry).path) as doc:
+            for n in pages:
+                page = doc[n - 1]
+                zoom = min(cell[0] / page.rect.width, cell[1] / page.rect.height) * 1.5
+                pix = page.get_pixmap(matrix=pymupdf.Matrix(zoom, zoom), alpha=False)
+                imgs.append(Image.frombytes("RGB", (pix.width, pix.height), pix.samples))
+    for im in imgs:
+        im.thumbnail(cell, Image.LANCZOS)
+    return imgs
+
+
+def contact_sheets(entry: dict, pages: list[int], per_sheet: int | None = None) -> list[Path]:
+    """Numbered page thumbnails, a few dozen per image, for finding the right page by eye."""
+    from PIL import Image, ImageDraw
+    if entry["kind"] == "image-guide":
+        aspect = 1389 / 2000
+    else:
+        with pymupdf.open(ensure(entry).path) as doc:
+            aspect = statistics.median(doc[n - 1].rect.height / doc[n - 1].rect.width for n in pages)
+    cell_w = max(180, min(520, round((80000 / aspect) ** 0.5)))
+    if entry["kind"] == "image-guide":
+        cell_w = 256
+    cell_h, gap, label_h = round(cell_w * aspect), 10, 30
+    cols = max(1, min(len(pages), 2100 // (cell_w + gap)))
+    per_sheet = per_sheet or cols * max(1, 2100 // (cell_h + label_h + gap))
+    f = font(20, True)
+    paths = []
+    for start in range(0, len(pages), per_sheet):
+        chunk = pages[start:start + per_sheet]
+        rows = -(-len(chunk) // cols)
+        sheet = Image.new("RGB", (gap + cols * (cell_w + gap), gap + rows * (cell_h + label_h + gap)), "white")
+        d = ImageDraw.Draw(sheet)
+        for i, (n, im) in enumerate(zip(chunk, _thumbs(entry, chunk, (cell_w, cell_h)))):
+            r, c = divmod(i, cols)
+            x, y = gap + c * (cell_w + gap), gap + r * (cell_h + label_h + gap)
+            tag = f"p{n}"
+            d.rounded_rectangle([x, y + 2, x + f.getlength(tag) + 14, y + label_h - 4], radius=6, fill=(228, 87, 46))
+            d.text((x + 7, y + 4), tag, font=f, fill="white")
+            ix, iy = x + (cell_w - im.width) // 2, y + label_h + (cell_h - im.height) // 2
+            sheet.paste(im, (ix, iy))
+            d.rectangle([ix - 1, iy - 1, ix + im.width, iy + im.height], outline=(190, 190, 190))
+        path = visuals_dir() / f"{entry['id']}-sheet-p{chunk[0]:03d}-p{chunk[-1]:03d}.png"
+        sheet.save(path)
+        paths.append(path)
+    return paths
+
+
+def cmd_page(args: argparse.Namespace) -> int:
+    from PIL import ImageDraw
+    e = resolve_one(load_registry(args.registry), args.id)
+    box = parse_box(args.box)
+    im = render_page(e, args.page, box, args.dpi)
+    if args.find:
+        hits = [(b, relative_box(b, box)) for b in find_boxes(e, args.page, args.find)]
+        hits = [(b, rel) for b, rel in hits if rel is not None]
+        d = ImageDraw.Draw(im)
+        for b, rel in hits:
+            px = [rel[0] * im.width, rel[1] * im.height, rel[2] * im.width, rel[3] * im.height]
+            d.rectangle([px[0] - 4, px[1] - 4, px[2] + 4, px[3] + 4], outline=(228, 87, 46), width=3)
+            where = ",".join(fmt_frac(round(v, 3)) for v in b)
+            inside = f"; within the --box crop: {','.join(fmt_frac(round(v, 3)) for v in rel)}" if box else ""
+            out(f"found \"{args.find}\" at page box {where}{inside}")
+        if not hits:
+            out(f"\"{args.find}\" is not printed on p{args.page}" + (" inside --box" if box else ""))
+    if args.grid:
+        if not box:
+            im.thumbnail((1600, 1600))  # whole-page grids are for planning a crop; keep labels legible
+        im = grid_overlay(im, box)
+    name = (f"{e['id']}-p{args.page:03d}" + (f"-box{'_'.join(fmt_frac(v) for v in box)}" if box else "")
+            + ("-grid" if args.grid else "") + ".png")
+    path = Path(args.output) if args.output else visuals_dir() / name
+    path.parent.mkdir(parents=True, exist_ok=True)
+    im.save(path)
+    announce(path, f"{im.width}x{im.height}px")
+    out(f"cite: {cite(e, args.page)}")
+    if args.grid:
+        out("next: read the area you want off the grid labels (page fractions), then "
+            f"`page {e['id']} {args.page} --box x0,y0,x1,y1` and view the crop to check it")
+    return EXIT_OK
+
+
+def cmd_sheet(args: argparse.Namespace) -> int:
+    e = resolve_one(load_registry(args.registry), args.id)
+    pages = parse_pages(args.pages, page_total(e))
+    for path in contact_sheets(e, pages, args.per_sheet):
+        announce(path)
+    out(f"next: view the sheet(s), pick a page, then `page {e['id']} N` (add --grid to plan a crop)")
+    return EXIT_OK
+
+
 # ----------------------------------------------------------------- commands --
 
 def cmd_list(args: argparse.Namespace) -> int:
@@ -922,7 +1237,7 @@ def cmd_fetch(args: argparse.Namespace) -> int:
         if e["kind"] == "pdf":
             extra.append(str(c.path))
         elif e["kind"] == "image-guide":
-            extra.append(f"page images: {e['url']} (`text {e['id']} N` prints page N's image URL)")
+            extra.append(f"{c.path} (page images are cached here as you view them: `page {e['id']} N`)")
         else:
             extra.append(f"{c.path}  (text of {e['url']})")
         statuses.append(report(e, compare(e, c), describe(c), extra))
@@ -947,7 +1262,8 @@ def cmd_text(args: argparse.Namespace) -> int:
         ids = ensure(e).meta["ids"]
         if not args.page or not 1 <= args.page <= len(ids):
             raise RegistryError(f"{e['id']} has pages 1–{len(ids)}")
-        out(f"{short(e)} page {args.page} is an image (no text layer); read it visually: "
+        out(f"{short(e)} page {args.page} is an image (no text layer); render it with "
+            f"`page {e['id']} {args.page}` and read it visually. Official image: "
             f"{page_image_url(e, ids[args.page - 1])}")
         return EXIT_OK
     pages, _ = page_texts(e)
@@ -986,6 +1302,20 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("id")
     s.add_argument("page", type=int, nargs="?")
     s.set_defaults(func=cmd_text)
+    s = sub.add_parser("page", parents=[common], help="render a page (or a crop of it) to PNG in out/visuals/")
+    s.add_argument("id", help="manual id")
+    s.add_argument("page", type=int, help="PDF page number / image-guide page number")
+    s.add_argument("--grid", action="store_true", help="overlay a labelled grid (page fractions) to plan a crop")
+    s.add_argument("--box", help="crop to x0,y0,x1,y1 (fractions of the page, 0..1)")
+    s.add_argument("--find", help="outline where this text is printed and print its box (PDFs with text)")
+    s.add_argument("--dpi", type=float, help="PDF render resolution (default: ~2000 px page, 300 dpi crops)")
+    s.add_argument("-o", "--output", help="output PNG (default out/visuals/<id>-p<page>….png)")
+    s.set_defaults(func=cmd_page)
+    s = sub.add_parser("sheet", parents=[common], help="numbered page thumbnails (contact sheets) in out/visuals/")
+    s.add_argument("id", help="manual id")
+    s.add_argument("--pages", help="e.g. 100-120 or 1-4,12 (default: all)")
+    s.add_argument("--per-sheet", type=int, help="thumbnails per image (default: fits ~2100 px)")
+    s.set_defaults(func=cmd_sheet)
     return p
 
 

@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.10"
-# dependencies = ["pytest>=8", "pymupdf>=1.24", "pyyaml>=6"]
+# dependencies = ["pytest>=8", "pymupdf>=1.24", "pillow>=10.1", "pyyaml>=6"]
 # ///
 """Offline smoke tests for the music-setup scripts (no network needed).
 
@@ -172,6 +172,110 @@ def test_exit_codes():
     assert manuals.exit_code(["OK", "OK"]) == 0
     assert manuals.exit_code(["OK", "NEWER"]) == 3
     assert manuals.exit_code(["CHANGED", "BROKEN"]) == 2
+
+
+def test_short_terms_match_whole_words_only():
+    pages = ["insert the cable into the inlet; the instrument input", "plug it in: line in"]
+    assert [h["page"] for h in manuals.search_pages(pages, "in")] == [2]
+    assert [h["page"] for h in manuals.search_pages(pages, "line in")] == [2]
+    assert [h["page"] for h in manuals.search_pages(pages, "instr")] == [1]
+    assert "**in**sert" not in manuals.search_pages(pages, "in")[0]["snippet"]
+
+
+def test_changed_pdf_suggests_version_from_new_title():
+    e = entry(version="firmware 1.7.0 (REV 10)", verified={"date": "2026-10-10", "sha256": "a" * 64, "pages": 78})
+    meta = {"sha256": "b" * 64, "bytes": 1, "pages": 79, "doc_title": "OP-1 field user guide firmware 1.6.0 (REV 9)"}
+    (finding,) = manuals.compare(e, manuals.Cached(e, Path("x.pdf"), meta, "downloaded"))
+    assert finding.status == "CHANGED" and finding.updates["version"] == meta["doc_title"]
+    same = dict(meta, doc_title="OP-1 field user guide firmware 1.7.0 (REV 10)")
+    (finding,) = manuals.compare(e, manuals.Cached(e, Path("x.pdf"), same, "downloaded"))
+    assert "version" not in finding.updates
+
+
+# ------------------------------------------------------------------ visuals --
+
+import diagram  # noqa: E402
+from PIL import Image  # noqa: E402
+
+DIAGRAMS = manuals.REPO_ROOT / "setup" / "diagrams"
+
+
+def test_parse_box_and_relative_box():
+    assert manuals.parse_box("0.1,0.2,0.3,0.4") == (0.1, 0.2, 0.3, 0.4)
+    for bad in ("0.5,0.2,0.3,0.4", "0,0,1", "a,b,c,d", [0, 0, 1.5, 1]):
+        with pytest.raises(manuals.RegistryError):
+            manuals.parse_box(bad)
+    assert manuals.relative_box((0.5, 0.5, 0.6, 0.6), (0.5, 0.5, 1, 1)) == pytest.approx((0, 0, 0.2, 0.2))
+    assert manuals.relative_box((0.1, 0.1, 0.2, 0.2), (0.5, 0.5, 1, 1)) is None
+
+
+def test_grid_overlay_adds_labelled_margins():
+    im = Image.new("RGB", (400, 300), "white")
+    out = manuals.grid_overlay(im, (0.5, 0.25, 1.0, 0.75))
+    assert out.width > 400 and out.height > 300
+
+
+def test_font_has_the_arrows_and_dashes():
+    assert manuals.missing_glyphs("main out → line in — 3.5 mm · ↔ µ Ω") == set()
+    assert manuals.missing_glyphs("ok ✓") == {"✓"}
+
+
+def test_compose_text_only_diagram():
+    spec = {"title": "t — x", "nodes": [{"id": "a", "label": "A"}, {"id": "b", "label": "B", "note": "n"},
+                                        {"id": "c", "label": "C"}],
+            "edges": [{"from": "a", "to": "b", "label": "a → b"}, {"from": "b", "to": "c", "style": "dashed"}],
+            "groups": [{"label": "G", "nodes": ["b", "c"]}], "sources": ["somewhere"]}
+    image, warnings = diagram.compose(spec, Path("."), [])
+    assert image.width > 300 and image.height > 100 and warnings == []
+
+
+def test_compose_reports_unknown_ids_and_bad_values():
+    with pytest.raises(diagram.SpecError, match="unknown node id 'nope'.*known: a"):
+        diagram.compose({"nodes": [{"id": "a"}], "edges": [{"from": "a", "to": "nope"}]}, Path("."), [])
+    with pytest.raises(diagram.SpecError, match="both in col 0, row 0"):
+        diagram.compose({"nodes": [{"id": "a", "col": 0, "row": 0}, {"id": "b", "col": 0, "row": 0}]},
+                        Path("."), [])
+    with pytest.raises(diagram.SpecError, match="unknown color"):
+        diagram.compose({"nodes": [{"id": "a"}, {"id": "b"}],
+                         "edges": [{"from": "a", "to": "b", "color": "nocolor"}]}, Path("."), [])
+
+
+def test_compose_local_image_flattens_rotates_and_highlights(tmp_path):
+    Image.new("RGBA", (200, 100), (0, 0, 0, 0)).save(tmp_path / "clear.png")
+    spec = {"nodes": [{"id": "img", "label": "drawing", "image": {"file": "clear.png", "box": [0, 0, 0.5, 1]},
+                       "rotate": 90, "height": 80, "highlights": [{"box": [0.1, 0.1, 0.5, 0.5], "label": "here"}]},
+                      {"id": "t", "label": "box ✓"}],
+            "edges": [{"from": "img", "to": "t", "label": "→", "arrow": "both"}]}
+    image, warnings = diagram.compose(spec, tmp_path, [])
+    assert any("✓" in w for w in warnings) and image.width > 100
+    assert manuals.flatten(Image.new("RGBA", (2, 2), (0, 0, 0, 0))).getpixel((0, 0)) == (255, 255, 255)
+
+
+def test_labels_stay_off_nodes():
+    spec = {"nodes": [{"id": "a", "label": "Amp", "col": 0, "row": 0}, {"id": "tx", "label": "TX-6", "col": 1, "row": 1},
+                      {"id": "o", "label": "OP-XY", "col": 0, "row": 1}, {"id": "b", "label": "OB-4", "col": 2, "row": 1}],
+            "edges": [{"from": "a", "to": "tx", "label": "line / DI out, 1/4in → 3.5 mm\nnever the speaker out"},
+                      {"from": "o", "to": "tx", "label": "3.5 mm stereo"},
+                      {"from": "tx", "to": "b", "label": "main out → line in"}]}
+    _, warnings = diagram.compose(spec, Path("."), [])
+    assert warnings == []
+
+
+@pytest.mark.parametrize("path", sorted(DIAGRAMS.glob("*.yaml")), ids=lambda p: p.name)
+def test_recipes_reference_registered_manual_pages(path):
+    spec = yaml.safe_load(path.read_text(encoding="utf-8"))
+    registry = {e["id"]: e for e in manuals.load_registry()}
+    ids = {n["id"] for n in spec["nodes"]}
+    for e in spec.get("edges", []):
+        assert e["from"] in ids and e["to"] in ids
+    for n in spec["nodes"]:
+        img = n.get("image")
+        if isinstance(img, dict) and "manual" in img:
+            assert img["manual"] in registry, img
+            assert 1 <= img["page"] <= registry[img["manual"]]["verified"]["pages"]
+            manuals.parse_box(img.get("box"))
+        for hl in n.get("highlights", []):
+            manuals.parse_box(hl["box"])
 
 
 if __name__ == "__main__":

@@ -122,7 +122,7 @@ gear:
     category: mixer / audio interface
     role: central mixer — everything goes here
     inputs: ["6x 3.5mm stereo channel inputs", "USB-C audio"]
-    outputs: ["3.5mm main out", "3.5mm aux out", "3.5mm cue/headphone (TRRS)", "USB-C audio (12in/12out)"]
+    outputs: ["6.35mm main out (removable 3.5mm adapter included)", "3.5mm aux out", "3.5mm cue/headphone (TRRS)", "USB-C audio (12in/12out)"]
     connectivity: ["USB-C MIDI", "BLE MIDI"]
     docs: https://teenage.engineering/guides/tx-6
     firmware: https://teenage.engineering/downloads/tx-6

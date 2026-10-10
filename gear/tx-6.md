@@ -31,7 +31,7 @@ Tip from TE: **save your settings to a scene first** (scenes added in 1.3.0).
 | Connector | Details |
 |-----------|---------|
 | Ch 1–6 inputs | 3.5mm stereo, 10 kΩ, 0–42 dB gain, max 13 dBu |
-| Main out | 3.5mm stereo (6.35mm adapter included), max 8 dBu / 2 Vrms |
+| Main out | 6.35 mm stereo jack; comes with a removable 6.35 → 3.5 mm adapter so 3.5 mm cables plug in ([TX-6 guide p8](https://assets.teenage.engineering/_img/66152cf71cfae6ae3cfe3338_original.png)); max 8 dBu / 2 Vrms |
 | Aux out | 3.5mm stereo, same spec as main (configurable "split aux out") |
 | Cue / headphone | 3.5mm TRRS (headset mic supported), max 2 dBu |
 | USB-C | 24-bit/48 kHz audio interface up to 12-in/12-out; USB audio host or device; USB MIDI; USB disk recording/playback (stereo WAV) |

@@ -11,4 +11,6 @@ them from the official manuals/docs linked in the repo and cite them (see the
 
 Official manuals are registered by URL in `gear/manuals.yaml` (never commit
 the files); fetch, search and cite them with
-`.github/skills/music-setup/scripts/manuals.py`.
+`.github/skills/music-setup/scripts/manuals.py`. Show official pages, crops and
+composed diagrams (`manuals.py page`/`sheet`, `diagram.py`) when a picture
+helps; generated images go to `out/` and are never committed.

@@ -13,7 +13,8 @@ Sam's music setup, tracked as code — plus a Copilot skill that knows it.
 | `setup/recording.md` | Plan for recording the whole rig onto the OP-1 field |
 | `creative/ideas-log.md` | Log of creative suggestions and how they landed |
 | `.github/skills/music-setup/SKILL.md` | The Copilot skill |
-| `.github/skills/music-setup/scripts/` | The skill's tools (manuals) |
+| `.github/skills/music-setup/scripts/` | The skill's tools (manuals, diagrams) |
+| `setup/diagrams/` | Diagram recipes (YAML) the skill renders to pictures |
 
 ## Using the skill
 
@@ -49,6 +50,22 @@ uv run .github/skills/music-setup/scripts/manuals.py search op-1-field "input"
 uv run .github/skills/music-setup/scripts/manuals.py text op-1-field-guide 12
 uv run .github/skills/music-setup/scripts/manuals.py check   # links alive? anything newer?
 uv run .github/skills/music-setup/scripts/tests/test_offline.py   # offline smoke tests
+```
+
+## Visual answers
+
+When it helps, the skill shows you the official page, crops just the figure
+that matters, or composes a picture: official drawings and boxes joined by
+arrows labelled with the cable and the jack names, with the right jack
+highlighted. Images are written to `out/` (gitignored, never committed: they
+contain the vendors' drawings); diagrams worth keeping are committed as small
+YAML recipes in `setup/diagrams/`, e.g. the current rig and recording mode.
+
+```powershell
+uv run .github/skills/music-setup/scripts/manuals.py page op-1-field-guide 4 --grid     # plan a crop
+uv run .github/skills/music-setup/scripts/manuals.py page op-1-field-guide 4 --box 0.556,0.585,0.765,0.945
+uv run .github/skills/music-setup/scripts/manuals.py sheet tx-6-guide                    # page thumbnails
+uv run .github/skills/music-setup/scripts/diagram.py setup/diagrams/recording-mode.yaml
 ```
 
 ## Current setup

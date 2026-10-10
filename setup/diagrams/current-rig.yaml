@@ -1,0 +1,58 @@
+# Sam's current rig, as cabled in setup/signal-chain.md, composed from the official drawings
+# (OP-1 field, OP-XY, TX-6, OB-4) plus text boxes for the guitar chain.
+# Keep it in sync with setup/signal-chain.md when the setup changes.
+#
+# Render it (PNG goes to out/visuals/, gitignored; never commit it, the drawings are TE's):
+#   uv run .github/skills/music-setup/scripts/diagram.py setup/diagrams/current-rig.yaml
+title: Sam's rig — current signal chain
+subtitle: Everything goes into the TX-6; the OB-4 is the monitor. TX-6 channel numbers are still TODO.
+nodes:
+  - {id: strings, label: "Bass VI · Jaguar\nTelecaster · Ibanez", note: "one at a time\n(Ibanez only if it has a pickup)", col: 0, row: 0}
+  - {id: pedals, label: Pedals, note: models TODO, col: 1, row: 0}
+  - {id: tuner, label: BOSS tuner, note: "TU-3?", col: 2, row: 0}
+  - {id: chroma, label: Chroma Console, col: 3, row: 0}
+  - {id: amp, label: Amp, note: model TODO, col: 4, row: 0}
+  - id: op1
+    label: OP-1 field
+    col: 0
+    row: 1
+    height: 120
+    rotate: -90
+    image: {manual: op-1-field-guide, page: 3, box: [0.598, 0.15, 0.702, 0.972]}
+  - id: opxy
+    label: OP-XY
+    col: 0
+    row: 2
+    height: 120
+    rotate: -90
+    image: {manual: op-xy-guide, page: 5, box: [0.13, 0.14, 0.41, 0.69]}
+  - id: tx6
+    label: TX-6
+    note: mixer
+    col: 4
+    row: 1
+    height: 220
+    image: {manual: tx-6-guide, page: 113, box: [0.418, 0.598, 0.548, 0.852]}
+  - id: ob4
+    label: OB-4
+    note: speaker
+    col: 5
+    row: 1
+    height: 190
+    image: {manual: tx-6-guide, page: 113, box: [0.643, 0.565, 0.8, 0.855]}
+  - {id: kalimba, label: Colour Palette kalimba, note: not connected yet, style: dashed, col: 0, row: 3}
+edges:
+  - {from: strings, to: pedals, label: 1/4in}
+  - {from: pedals, to: tuner}
+  - {from: tuner, to: chroma, label: OUTPUT → IN}
+  - {from: chroma, to: amp, label: OUT → input}
+  - {from: amp, to: tx6, label: "line / headphone / DI out, 1/4in → 3.5 mm\nnever the speaker out", color: "#e4572e"}
+  - {from: op1, to: tx6, label: 3.5 mm stereo}
+  - {from: opxy, to: tx6, label: 3.5 mm stereo, to_side: bottom}
+  - {from: tx6, to: ob4, label: "main out → line in\n3.5 mm stereo, 3-pole"}
+groups:
+  - {label: Pedalboard, nodes: [pedals, tuner, chroma]}
+sources:
+  - "Connections and cables: setup/signal-chain.md. Jack names: TX-6 guide p8 (main out: a 6.35 mm jack
+    with a removable 3.5 mm adapter), OB-4 guide (line input, 3-pole cable), BOSS TU-3 manual p1
+    (INPUT / OUTPUT)."

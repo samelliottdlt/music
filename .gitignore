@@ -1,3 +1,7 @@
 # Python
 __pycache__/
 .pytest_cache/
+
+# Generated visuals (rendered manual pages, diagrams). Never commit images
+# rendered from vendor manuals; commit diagram recipes (setup/diagrams/) instead.
+out/

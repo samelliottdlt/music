@@ -27,6 +27,10 @@ flowchart LR
     classDef notconnected stroke-dasharray: 5 5
 ```
 
+A picture of the same chain built from the official drawings:
+`setup/diagrams/current-rig.yaml` (render it with the skill's `diagram.py`;
+keep it in sync with this file).
+
 ## Connections
 
 | From | Out jack | To | In jack | Cable | Notes |

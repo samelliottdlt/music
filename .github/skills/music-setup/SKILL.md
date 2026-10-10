@@ -1,6 +1,6 @@
 ---
 name: music-setup
-description: Sam's personal music-gear assistant. Use for ANY question about Sam's music gear or setup (OP-1 field, OP-XY, TX-6, OB-4, Chroma Console, BOSS tuner, Fender Bass VI / Jaguar / Telecaster, Ibanez acoustic, kalimba, amp, pedals), including how-to/feature questions, firmware updates, cabling/routing/recording, adding or removing gear, and creative prompts like "give me ideas", "I'm stuck", "what should I try", presets, scales, progressions, or riffs.
+description: Sam's personal music-gear assistant. Use for ANY question about Sam's music gear or setup (OP-1 field, OP-XY, TX-6, OB-4, Chroma Console, BOSS tuner, Fender Bass VI / Jaguar / Telecaster, Ibanez acoustic, kalimba, amp, pedals), including how-to/feature questions, firmware updates, cabling/routing/recording, diagrams or pictures of the setup, adding or removing gear, and creative prompts like "give me ideas", "I'm stuck", "what should I try", presets, scales, progressions, or riffs.
 ---
 
 # Music setup assistant
@@ -58,6 +58,34 @@ never commit them.
   `gear/manuals.yaml` by hand from the snippet the tool prints. When adopting
   a newer manual, re-verify the device-file facts cited from the old one.
 
+## Visual answers (applies to every mode)
+
+Seeing beats reading for physical things. Add a picture **when** the answer
+involves where a jack/button/screen is, cabling/routing/signal flow, or a
+multi-step on-device procedure, or when Sam asks; skip it for theory and idea
+lists. Use the simplest picture that answers the question:
+
+1. **Show the official page:** open `<pdf-url>#page=N` (or the TX-6 page
+   image URL from `manuals.py text tx-6-guide N`) in the side panel.
+2. **Extract the figure:** `manuals.py page <id> <N> --grid` → view it → read
+   the area off the grid → `page <id> <N> --box x0,y0,x1,y1` → view the crop
+   to check it. On PDFs with text, `--find "label"` boxes a printed label.
+   For scans and the TX-6 guide, find the page with `manuals.py sheet <id>`.
+3. **Compose, annotate or create** with `scripts/diagram.py spec.yaml`:
+   official drawings and text boxes, arrows labelled with the cable and the
+   jack names as printed on the devices, highlights on the right jack or
+   button, and `sources`. Examples in `setup/diagrams/`. Keep it small (≈8
+   nodes) with signal flowing left → right; give nodes `col`/`row` when
+   there are more than ~5.
+
+Always `view` the PNG yourself before presenting it (overlaps, bad crops).
+**Present it:** if the `open_canvas` tool exists (GitHub Copilot app), open
+the PNG in the `browser` canvas with its `file:///` URI (reuse one
+`instanceId` and `navigate_page` for later visuals); always give the file path
+too. Generated images stay in `out/` (gitignored): never commit or upload
+images rendered from manuals. Commit a diagram's YAML spec instead when it's
+worth keeping.
+
 ## Files you must use
 
 | File | What it holds |
@@ -67,6 +95,7 @@ never commit them.
 | `gear/<id>.md` | Per-device reference: docs, firmware update steps, I/O, key features, built-in sounds/presets, tips |
 | `setup/signal-chain.md` | Current cabling (Mermaid diagram + connection table) |
 | `setup/recording.md` | How to record the whole rig onto the OP-1 field (the end goal) |
+| `setup/diagrams/*.yaml` | Diagram recipes for `diagram.py` (specs, never PNGs) |
 | `creative/ideas-log.md` | Past creative suggestions Sam liked/disliked, so ideas stay fresh |
 
 Read `gear/inventory.yaml` first on every invocation, then only the device
@@ -98,12 +127,15 @@ files relevant to the question.
 2. Reason about signal levels (instrument vs line vs speaker level), mono vs
    stereo, connector types, free mixer channels, and feedback loops (e.g. a
    device that is both a TX-6 input and the recording destination).
-3. Propose the concrete routing (which jack → which jack, which cable type) and
-   show an updated Mermaid diagram.
+3. Propose the concrete routing (which jack → which jack, which cable type)
+   and show it as a picture with `diagram.py` (see Visual answers; start from
+   `setup/diagrams/current-rig.yaml`). Keep Mermaid for the committed repo
+   docs, where GitHub renders it.
 4. When Sam confirms a change to his physical setup, update
-   `gear/inventory.yaml`, `setup/signal-chain.md`, and create `gear/<id>.md`
-   for new gear (research its official docs + firmware page first, and follow
-   the structure of the existing device files).
+   `gear/inventory.yaml`, `setup/signal-chain.md` and
+   `setup/diagrams/current-rig.yaml`, and create `gear/<id>.md` for new gear
+   (research its official docs + firmware page first, and follow the
+   structure of the existing device files).
 
 ## Mode 3 — Creative spark ("I'm stuck", "give me ideas", "what should I try")
 
@@ -134,8 +166,8 @@ points, never finished pieces.
 ## Keeping the repo current
 
 - Gear added/removed/replaced → update inventory, signal chain, device file,
-  and its manuals in `gear/manuals.yaml` (`fetch <id>` prints the
-  `verified` block to paste).
+  `setup/diagrams/current-rig.yaml`, and its manuals in `gear/manuals.yaml`
+  (`fetch <id>` prints the `verified` block to paste).
 - Unknown fields (e.g. amp model, tuner model) are marked `TODO` in the
   inventory. If Sam mentions one, fill it in and research its docs.
 - Keep device files in your own words with links to official sources; don't

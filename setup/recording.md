@@ -24,6 +24,9 @@ flowchart LR
     OP1 -.or FM transmit.-> OB4
 ```
 
+The same routing drawn with the official drawings (which jack, which screen):
+render `setup/diagrams/recording-mode.yaml` with the skill's `diagram.py`.
+
 1. Unplug the OP-1 field's output from its TX-6 channel.
 2. Cable **TX-6 main out → OP-1 field input jack** (3.5mm TRS stereo; the
    OP-1 field's input is a stereo line-in, 13 kΩ, 0–31 dB gain).
@@ -31,11 +34,15 @@ flowchart LR
    **OP-1 field out → OB-4 line in**. Cable-free alternative: use the OP-1
    field's FM **transmitter** and set the OB-4 to FM radio — OP-1 field can sync
    its transmit frequency with an OB-4 (firmware 1.2.9+).
-4. On the OP-1 field, select line-in as the input source (mono/stereo toggle
-   exists since firmware 1.3.2), set input gain so the loudest parts don't
-   clip, go to tape mode and record onto a track. *(Exact menu path: verify in
-   the [OP-1 field guide](https://teenage.engineering/guides/op-1) and record
-   it here.)*
+4. On the OP-1 field, press **shift + input** to open the input screen: the
+   **blue** encoder picks the source (*built-in microphone / line in*),
+   **ochre** sets stereo/mono, **orange** the input gain (set it so the
+   loudest parts don't clip) and **gray** the recording threshold; the
+   **input** key toggles the selected input on/off
+   ([OP-1 field guide p54](https://assets.teenage.engineering/_img/69f248938d433104c4dd1846_original.pdf#page=54)).
+   Then press **tape**, pick a track with **T1–T4**, hold **record** while the
+   rig plays and press **stop** when done
+   ([p39](https://assets.teenage.engineering/_img/69f248938d433104c4dd1846_original.pdf#page=39)).
 5. Overdub on the other tape tracks. Record OP-1 field synth parts directly
    (no cables needed — internal), and live TX-6 parts via the input.
 6. Mix down / export: 4 tracks → stereo mixdown on the OP-1; transfer files
@@ -66,6 +73,7 @@ recording, but no multitrack/tape tricks like the OP-1 field.
 
 ## Status
 
-- [ ] Try recording mode and confirm the OP-1 field input menu path
+- [ ] Try recording mode (the OP-1 field steps above are from the guide; note
+      what works in practice)
 - [ ] Try USB audio TX-6 → OP-1 field
 - [ ] Note the input gain setting that works for the amp + OP-XY mix

@@ -1,0 +1,56 @@
+# "Recording mode" from setup/recording.md: the OP-1 field becomes the last stop in the chain,
+# records the TX-6 mix to tape, and feeds the OB-4. Composed from the official drawings and
+# adorned with highlights (which jack, which screen).
+#
+# Render it (PNG goes to out/visuals/, gitignored; never commit it, the drawings are TE's):
+#   uv run .github/skills/music-setup/scripts/diagram.py setup/diagrams/recording-mode.yaml
+title: Recording mode — the whole rig onto the OP-1 field's tape
+subtitle: The OP-1 field is the last stop, so its output never loops back into the TX-6 (no feedback).
+nodes:
+  - {id: amp, label: Amp, note: "line / DI out\n(never the speaker out)", col: 0, row: 0}
+  - {id: opxy, label: OP-XY, note: 3.5 mm out, col: 0, row: 1}
+  - {id: kalimba, label: Kalimba, note: optional, style: dashed, col: 0, row: 2}
+  - id: tx6
+    label: TX-6
+    note: mix it here first
+    col: 1
+    row: 1
+    height: 220
+    image: {manual: tx-6-guide, page: 113, box: [0.418, 0.598, 0.548, 0.852]}
+  - id: op1
+    label: right side (jacks)
+    col: 2
+    row: 1
+    height: 200
+    image: {manual: op-1-field-guide, page: 4, box: [0.556, 0.585, 0.765, 0.945]}
+    highlights:
+      - {box: [0.24, 0.32, 0.455, 0.96], label: TX-6 in}
+  - id: input
+    label: shift + input
+    note: "blue encoder: mic / line in\nochre: stereo / mono · orange: gain"
+    col: 2
+    row: 2
+    height: 170
+    image: {manual: op-1-field-guide, page: 54, box: [0.548, 0.375, 0.988, 0.985]}
+    highlights:
+      - {box: [0.17, 0.34, 0.345, 0.83], label: mic / line in}
+  - id: ob4
+    label: OB-4
+    note: listen here
+    col: 3
+    row: 1
+    height: 200
+    image: {manual: tx-6-guide, page: 113, box: [0.643, 0.565, 0.8, 0.855]}
+edges:
+  - {from: amp, to: tx6, label: 1/4in → 3.5 mm}
+  - {from: opxy, to: tx6, label: 3.5 mm stereo}
+  - {from: kalimba, to: tx6, label: 1/4in → 3.5 mm, style: dashed}
+  - {from: tx6, to: op1, label: "main out → audio in\n3.5 mm stereo (TRS)", color: "#e4572e"}
+  - {from: op1, to: ob4, label: audio out → line in}
+  - {from: op1, to: ob4, label: or FM transmit, style: dashed}
+groups:
+  - {label: OP-1 field (records to tape), nodes: [op1, input]}
+sources:
+  - "Routing: setup/recording.md (recording mode)."
+  - "Jacks: OP-1 field guide p4 (usb c / audio in / audio out); TX-6 guide p8 (main out: a 6.35 mm jack
+    with a removable 3.5 mm adapter); OB-4 guide (line input, FM radio). Input screen: OP-1 field guide p54."

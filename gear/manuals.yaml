@@ -119,7 +119,7 @@ manuals:
       No PDF exists: the guide is 133 page images (2000x1389, text baked in),
       so there is no text search; browse it visually and cite "TX-6 guide pN"
       linking the page image. Key pages: 4 hardware, 6-9 audio in/out,
-      10 and 12 audio in/out examples, 23-24 input mode, 49-51 disk recorder,
+      10-12 audio in/out examples, 23-24 input mode, 49-51 disk recorder,
       53 aux out, 57 cue out, 62 instrument tuner, 71-72 usb / usb audio,
       107 signal flow, 111-118 "field": using TX-6 with other gear
       (113 = OP-1 + OP-Z + PO + M-1 + TX-6 + DAW + OB-4).
