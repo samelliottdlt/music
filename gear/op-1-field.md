@@ -6,15 +6,18 @@ does not apply.
 
 ## Official docs
 
-- User guide (single long page): https://teenage.engineering/guides/op-1
-- Downloads / firmware + release notes + PDF guide: https://teenage.engineering/downloads/op-1/field
+- User guide PDF (firmware 1.7.0): `op-1-field-guide` in `gear/manuals.yaml`;
+  search/read/cite it with `manuals.py` (see the skill). It's the
+  "download as PDF" link on the guide page.
+- User guide (single long web page): https://teenage.engineering/guides/op-1
+- Downloads / firmware + release notes: https://teenage.engineering/downloads/op-1/field
 - Product/spec page: https://teenage.engineering/products/op-1
 - Browser updater (Web MIDI): https://teenage.engineering/apps/update
 - Sound packs: https://teenage.engineering/downloads/op-1/sound-packs
 
-> The guide pages are JS-rendered; plain fetches often return only legal text.
-> The downloads page lists PDF user guides (e.g. "OP-1 field user guide
-> firmware 1.7.0.pdf") — open in a browser to download.
+> The guide web page is JS-rendered; plain fetches often return only legal
+> text. Use the registered PDF instead (it's linked from the guide page, not
+> from the downloads page).
 
 ## Firmware update
 

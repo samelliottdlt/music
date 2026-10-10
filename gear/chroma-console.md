@@ -1,12 +1,16 @@
 # Hologram Electronics Chroma Console
 
-Multi-effect pedal with four effect "modules" that can run together. Last
-pedal before the amp.
+Multi-effect pedal with four effect "modules" that can run together. The only
+pedal on Sam's board: instruments → Chroma Console → amp. Jacks are printed
+INPUT L / INPUT R and OUTPUT L / OUTPUT R; for a mono guitar, use one input
+and one output
+([manual pp42–43](https://cdn.shopify.com/s/files/1/0920/2928/8752/files/CC_manual_WEB.pdf?v=1758823440#page=42)).
 
 ## Official docs
 
 - Product page: https://www.hologramelectronics.com/pages/chroma-console
 - Manual: https://www.hologramelectronics.com/pages/chroma-console-manual
+  (the PDF, firmware V1.04, is `chroma-console-manual` in `gear/manuals.yaml`)
 - Firmware: https://www.hologramelectronics.com/pages/chroma-console-firmware
 - Support: https://www.hologramelectronics.com/pages/support
 

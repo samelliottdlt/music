@@ -5,6 +5,10 @@ tracks, step sequencer, song mode.
 
 ## Official docs
 
+- Full guide PDF (v1.1.15): `op-xy-guide` in `gear/manuals.yaml`; search/read/
+  cite it with `manuals.py`. Cite PDF page numbers (the numbers printed on
+  the pages are 4–5 lower).
+
 Guide (split into chapters — these fetch better than OP-1/TX-6 pages):
 
 - Index: https://teenage.engineering/guides/op-xy

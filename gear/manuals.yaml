@@ -1,0 +1,377 @@
+# Official manuals for Sam's gear: a registry of LINKS, not files.
+#
+# Never commit the manuals themselves, or images rendered from them, to this
+# public repo: they're the vendors' copyrighted material, some are huge (the
+# OP-XY guide is ~30 MB, and every revision would stay in git history), and a
+# committed copy silently drifts from the official one. Fetch them on demand
+# into a local cache outside the repo (~/.cache/music-manuals, override with
+# MUSIC_MANUALS_CACHE):
+#
+#   uv run .github/skills/music-setup/scripts/manuals.py list
+#   uv run .github/skills/music-setup/scripts/manuals.py fetch <manual-id|gear-id|all>
+#   uv run .github/skills/music-setup/scripts/manuals.py search <manual-id|gear-id|all> "terms"
+#   uv run .github/skills/music-setup/scripts/manuals.py text <manual-id> <page>
+#   uv run .github/skills/music-setup/scripts/manuals.py check     # links alive? newer versions?
+#
+# When fetch/check reports a problem (exit code 2 = BROKEN, 3 = drift):
+#   BROKEN   dead link, not a PDF anymore, or discovery stopped working
+#   MOVED    the link redirects somewhere else
+#   CHANGED  same URL, different file: the manual was revised upstream
+#   NEWER    the vendor publishes a newer version than `url`
+#   NEW      the entry has no `verified` block yet
+# tell Sam, find the current official file (start at `discover.page`), and
+# update the entry BY HAND: the tool prints a ready-to-paste snippet, but
+# don't regenerate this file (the comments matter). Then run
+# `fetch <id> --refresh` and re-verify facts in gear/*.md that were cited from
+# the old version (page numbers can shift).
+#
+# Fields
+#   id         unique kebab-case id, used in commands, citations and diagram recipes
+#   gear       inventory id(s) from gear/inventory.yaml
+#   title      title as printed on the document; `short` = label for citations
+#   kind       pdf | image-guide (web guide made of page images) | web (HTML page)
+#   url        the official file/page, i.e. what citations link to. PDFs: append
+#              #page=N using PDF page numbers (not the numbers printed on the page)
+#   version    document / firmware version it covers
+#   discover   how to spot a newer version: `page` + `method` + `match` regex
+#                te-assets     teenage.engineering page; newest asset whose name matches
+#                link          newest link matching the regex (capture group 1 = version key)
+#                text-version  version string on the page (group 1) vs `version`
+#                none          no reliable way; check by hand now and then
+#   verified   what was last verified upstream: date, sha256, bytes, pages, etag, last_modified
+#   notes      what an agent needs to know to use the document well
+#
+# Every gear id in gear/inventory.yaml has at least one entry.
+
+manuals:
+  # ---------- Teenage Engineering ----------
+  - id: op-1-field-guide
+    gear: op-1-field
+    title: OP-1 field user guide
+    short: OP-1 field guide
+    publisher: teenage engineering
+    kind: pdf
+    url: https://assets.teenage.engineering/_img/69f248938d433104c4dd1846_original.pdf
+    version: firmware 1.7.0 (REV 10)
+    discover:
+      page: https://teenage.engineering/guides/op-1
+      method: te-assets
+      match: 'OP-1 field user guide firmware [\d.]+\.pdf'
+    verified:
+      date: 2026-10-10
+      sha256: 76614cddc4108855628d4bc6a3223d9c23c82d8d6a2b3351405671aa29bc5fbf
+      bytes: 2204648
+      pages: 78
+      etag: '"0348941a763f39628a3bdc6c8dfd2488"'
+      last_modified: Wed, 29 Apr 2026 18:06:12 GMT
+    notes: >-
+      It's the "download as PDF" link on the guide page (not on the downloads
+      page). PDF pages are two-page spreads (except p1); no bookmarks; all
+      illustrations are vector drawings.
+
+  - id: op-xy-guide
+    gear: op-xy
+    title: OP–XY full guide
+    short: OP-XY guide
+    publisher: teenage engineering
+    kind: pdf
+    url: https://assets.teenage.engineering/_img/6a452a3b31b95d1c6dbb44bb_original.pdf
+    version: "1.1.15"
+    discover:
+      page: https://teenage.engineering/guides/op-xy
+      method: te-assets
+      match: 'OP-XY_printed guide_v[\d.]+.*\.pdf'
+    verified:
+      date: 2026-10-10
+      sha256: 8aad30661dda05ba01baf5bd0e260f9e28bfc771fb37ab5ad9b8ff66577c2d39
+      bytes: 29601066
+      pages: 135
+      etag: '"31d69b51572c5d6cce03f804273309b5"'
+      last_modified: Wed, 01 Jul 2026 14:54:52 GMT
+    notes: >-
+      The "printable guide" on the guide page (TE's file name is
+      "OP-XY_printed guide_v1.1.5 (1).pdf"). ~30 MB. Printed page numbers are
+      offset from PDF pages (PDF p7 shows "3"): always cite PDF page numbers,
+      which is what #page=N uses. Index on PDF pp2-4. Vector illustrations.
+
+  - id: tx-6-guide
+    gear: tx-6
+    title: TX-6 guide
+    short: TX-6 guide
+    publisher: teenage engineering
+    kind: image-guide
+    url: https://teenage.engineering/guides/tx-6
+    version: "1.3.0"
+    page_images:
+      # page N = the Nth unique image id on the guide page, in document order
+      list: '_img/([0-9a-f]{24})_128\.webp'
+      image: 'https://assets.teenage.engineering/_img/{id}_original.png'
+      thumb: 'https://assets.teenage.engineering/_img/{id}_256.webp'
+    discover:
+      method: text-version
+      match: 'v\.(\d+(?:\.\d+)+)'
+    verified:
+      date: 2026-10-10
+      pages: 133
+      ids_sha256: fa846bfbf87bd10a3ac149b511a0c3a79ce9f6b0bde00e6f920807f61f50f574
+    notes: >-
+      No PDF exists: the guide is 133 page images (2000x1389, text baked in),
+      so there is no text search; browse it visually and cite "TX-6 guide pN"
+      linking the page image. Key pages: 4 hardware, 6-9 audio in/out,
+      10-12 audio in/out examples, 23-24 input mode, 49-51 disk recorder,
+      53 aux out, 57 cue out, 62 instrument tuner, 71-72 usb / usb audio,
+      107 signal flow, 111-118 "field": using TX-6 with other gear
+      (113 = OP-1 + OP-Z + PO + M-1 + TX-6 + DAW + OB-4).
+
+  - id: ob-4-guide
+    gear: ob-4
+    title: OB-4 guide
+    short: OB-4 guide
+    publisher: teenage engineering
+    kind: web
+    url: https://teenage.engineering/guides/ob-4
+    version: "1.3.3"
+    discover:
+      method: text-version
+      match: 'v\.(\d+(?:\.\d+)+)'
+    verified:
+      date: 2026-10-10
+    notes: No PDF exists. A text guide on one web page; `search` and `text` work on its text.
+
+  # ---------- Pedals ----------
+  - id: chroma-console-manual
+    gear: chroma-console
+    title: Chroma Console manual
+    short: Chroma Console manual
+    publisher: Hologram Electronics
+    kind: pdf
+    url: https://cdn.shopify.com/s/files/1/0920/2928/8752/files/CC_manual_WEB.pdf?v=1758823440
+    version: firmware V1.04
+    discover:
+      page: https://www.hologramelectronics.com/pages/chroma-console-manual
+      method: link
+      match: 'https://cdn\.shopify\.com/[^"''\s]*CC_manual[^"''\s]*\.pdf\?v=(\d+)'
+    verified:
+      date: 2026-10-10
+      sha256: 9b38962a53df6188c936e49e2301cfc104c18cde693ded136d1d6c557d8fca54
+      bytes: 8925747
+      pages: 50
+    notes: >-
+      Shopify CDN: no ETag/Last-Modified, and the ?v= number changes whenever
+      the file is replaced. Text plus raster illustrations.
+
+  - id: boss-tu-3s-manual
+    gear: boss-tuner
+    title: TU-3S Owner's Manual (English)
+    short: BOSS TU-3S manual
+    publisher: BOSS (Roland)
+    kind: pdf
+    url: https://static.roland.com/assets/media/pdf/TU-3S_M_eng02_W.pdf
+    version: eng02 (© 2016)
+    discover:
+      method: none  # the BOSS support pages are rendered by JavaScript (no link in the HTML)
+    verified:
+      date: 2026-10-10
+      sha256: 1bacba1d08224c395b55a5194f8656a3bcf8c34810ac4e1ab5927833d01bd1bf
+      bytes: 341356
+      pages: 1
+      etag: '"988ac1fb67aca456fe1c9ab6b61f83cf"'
+      last_modified: Wed, 11 May 2022 15:32:33 GMT
+    notes: >-
+      One page, English only; everything (modes, settings, jacks, specs) is
+      on it. Revisions get a new file name: ..._eng01_W.pdf is the older one,
+      and ..._eng03_W.pdf answered 403 on 2026-10-10, so try that by hand now
+      and then. Product page: https://www.boss.info/us/products/tu-3s/
+
+  - id: orange-micro-terror-manual
+    gear: orange-micro-terror
+    title: "Product Manual: Micro Terror"
+    short: Micro Terror manual
+    publisher: Orange Amplification
+    kind: pdf
+    url: https://cdn.shopify.com/s/files/1/0943/5250/7206/files/Micro_Terror_-_Word_Manual_2025_V1.0_EN.pdf?v=1758622989
+    version: Version 1.0 EN, August 2025
+    discover:
+      page: https://orangeamps.com/products/micro-terror
+      method: link
+      match: 'https://cdn\.shopify\.com/[^"''\s]*Micro_Terror[^"''\s]*_EN\.pdf\?v=(\d+)'
+    verified:
+      date: 2026-10-10
+      sha256: 162acaa421354b09fa2a6fdc8a0060871079259f4dfe6b7eb68fb8bb7482e982
+      bytes: 168656
+      pages: 4
+    notes: >-
+      Linked as "click here" under Manuals on the product page. Shopify CDN:
+      no ETag/Last-Modified, and the ?v= number changes whenever the file is
+      replaced. orangeamps.com sometimes rate-limits scripts (HTTP 429/503):
+      if `check` says the discovery page is BROKEN with one of those, retry
+      later before treating it as a dead link. Controls, jacks and specs are
+      all on p3.
+
+  # ---------- Instruments ----------
+  - id: fender-electric-guitar-manual
+    gear: [jaguar, telecaster]
+    title: Owner's Manual for Fender Guitars
+    short: Fender electric guitar manual
+    publisher: Fender
+    kind: pdf
+    url: https://www.fmicassets.com/Damroot/Original/10066/OM_Fender-Electric-Guitar_EN.pdf
+    version: file dated 2024-10-01
+    discover:
+      page: https://eu.fender.com/products/player-ii-telecaster
+      method: link
+      match: 'https://www\.fmicassets\.com/Damroot/Original/\d+/[^"''\s<>]*Electric[-_]Guitar[^"''\s<>]*\.pdf'
+    verified:
+      date: 2026-10-10
+      sha256: 1bcf380c7307823c4b0c5690df34f7adf4e50d911efaa235df097d9a3235d07b
+      bytes: 4890281
+      pages: 34
+      etag: '"979024ceacb94108026255a6526e3bf4"'
+      last_modified: Tue, 01 Oct 2024 08:07:45 GMT
+    notes: >-
+      Fender's current general electric guitar manual (care, setup and
+      adjustments such as the truss rod on p23), not model specific.
+      Linked from current product pages (discovery uses the Player II
+      Telecaster page). The server labels it "document/pdf"; it's a normal
+      PDF. Replaced the 2013 edition (leg_gtr_2013_..., still on Fender's
+      legacy manuals page) after `check` reported this one as NEWER on
+      2026-10-10.
+
+  - id: fender-bass-manual
+    gear: bass-vi
+    title: Owner's Manual for Fender Bass Guitars
+    short: Fender bass manual
+    publisher: Fender
+    kind: pdf
+    url: https://www.fmicassets.com/Damroot/Original/10001/Fender_BassGuitars_Manual.pdf
+    version: file dated 2023-08-24
+    discover:
+      page: https://eu.fender.com/products/vintera-iii-early-60s-bass-vi
+      method: link
+      match: 'https://www\.fmicassets\.com/Damroot/Original/\d+/[^"''\s<>]*Bass[-_]?Guitars?[^"''\s<>]*\.pdf'
+    verified:
+      date: 2026-10-10
+      sha256: eb7833a0a9002b9c0d359fb1b40a49f91992fa12f79c38d6887b8d42b6413cb5
+      bytes: 4037975
+      pages: 34
+      etag: '"fc9f203453797f4b8a45e15ad09f85f4"'
+      last_modified: Thu, 24 Aug 2023 22:30:24 GMT
+    notes: >-
+      Fender's current general bass manual (care, setup and adjustments such
+      as intonation on p27), linked under Downloads on the
+      Vintera III Early '60s Bass VI page (Sam's bass). Replaced the 2013
+      edition (OM_leg_bass_2013_...) after `check` reported this one as NEWER
+      on 2026-10-10.
+
+  - id: fender-bass-vi-1962
+    gear: bass-vi
+    title: Fender Instruction Manual for Bass VI
+    short: Fender Bass VI (vintage) manual
+    publisher: Fender
+    kind: pdf
+    url: https://www.fmicassets.com/Damroot/Original/10001/leg_gtr_Bass_VI_%281962%29.pdf
+    version: vintage (Fender files it as 1962)
+    discover:
+      page: https://support.fender.com/hc/en-us/articles/42585217965083-Fender-Guitar-Owner-s-Manuals
+      method: link
+      match: 'https://www\.fmicassets\.com/Damroot/Original/10001/leg_gtr_Bass_VI_[^"''\s<>]*\.pdf'
+    verified:
+      date: 2026-10-10
+      sha256: 48616d132a43a31bea690ab3c6a3d7185dafcbaee47b6a73d1d7656cb3d3f2cb
+      bytes: 2737196
+      pages: 14
+      etag: '"4007c5d5a75ad0196114a2bcb0855323"'
+      last_modified: Tue, 09 Jan 2018 16:07:20 GMT
+    notes: >-
+      Vintage instruction manual, scanned (no text layer): read it visually.
+      Same file as .../OM_leg_bass_Bass_VI_1962.pdf on the bass manuals page
+      (the scan's own file name says 1966). Sam's bass is a modern reissue
+      (Vintera III Early '60s Bass VI): use its product page and
+      fender-bass-manual first; details here may differ.
+
+  - id: fender-jaguar-vintage
+    gear: jaguar
+    title: Fender Jaguar Instruction Manual
+    short: Fender Jaguar (vintage) manual
+    publisher: Fender
+    kind: pdf
+    url: https://www.fmicassets.com/Damroot/Original/10001/leg_gtr_Jaguar_Owner%27s_Manual-Vintage.pdf
+    version: vintage
+    discover:
+      page: https://support.fender.com/hc/en-us/articles/42585217965083-Fender-Guitar-Owner-s-Manuals
+      method: link
+      match: 'https://www\.fmicassets\.com/Damroot/Original/10001/leg_gtr_Jaguar_Owner%27s_Manual-Vintage\.pdf'
+    verified:
+      date: 2026-10-10
+      sha256: 6cd926de57540214d8755cf6285ab0ae12dbafc3784199e8fe9a22483f23b03f
+      bytes: 702457
+      pages: 7
+      etag: '"129818576f21a18463e2d459fe50e9fb"'
+      last_modified: Tue, 09 Jan 2018 16:06:36 GMT
+    notes: >-
+      Scanned (no text layer), with controls diagrams: read it visually. It
+      covers the original Jaguar; Sam's is a Japanese-made Jaguar from around
+      2007-2008 (exact model TODO), so details may differ.
+
+  - id: ibanez-acoustic-manual
+    gear: ibanez-acoustic
+    title: Ibanez Acoustic Guitar Instruction Manual (English)
+    short: Ibanez acoustic guitar manual
+    publisher: Ibanez (Hoshino Gakki)
+    kind: pdf
+    url: https://www.hoshinogakki.co.jp/pdf/ibanez/manual/en/ag/acos_guitar_manual_EN.pdf
+    version: file dated 2019-10-23
+    discover:
+      page: https://www.ibanez.com/world/support/manual/
+      method: link
+      match: 'https?://www\.hoshinogakki\.co\.jp/pdf/ibanez/manual/en/ag/acos_guitar_manual_EN\.pdf'
+    verified:
+      date: 2026-10-10
+      sha256: 17ebe8bda00cd5a3ca60d167a49a7c1fcd791380e8cb11d1656a0bea745635f1
+      bytes: 713894
+      pages: 3
+      etag: '"ae4a6-5958d3691b780"'
+      last_modified: Wed, 23 Oct 2019 05:30:22 GMT
+    notes: >-
+      General acoustic guitar manual (not model specific). Sam's TOD10N has
+      its own preamp manual: ibanez-aeq210tf-manual. The page links it as
+      http://; store https://.
+
+  - id: ibanez-aeq210tf-manual
+    gear: ibanez-acoustic
+    title: AEQ210TF Preamp Information (English)
+    short: Ibanez AEQ210TF manual
+    publisher: Ibanez (Hoshino Gakki)
+    kind: pdf
+    url: https://www.hoshinogakki.co.jp/pdf/ibanez/manual/en/ag/acos_guitar_preamp_AEQ210TF_EN.pdf
+    version: file dated 2022-03-28
+    discover:
+      page: https://www.ibanez.com/world/support/manual/
+      method: link
+      # a revision would likely be named ..._AEQ210TF_Ver2_EN.pdf, like other Ibanez preamp manuals
+      match: 'https?://www\.hoshinogakki\.co\.jp/pdf/ibanez/manual/en/ag/acos_guitar_preamp_AEQ210TF(?:_Ver(\d+))?_EN\.pdf'
+    verified:
+      date: 2026-10-10
+      sha256: 68a6997e905ba3b63b3b1ab3e24600aa5b88a36064a590d7f6da63a48c563d8a
+      bytes: 931628
+      pages: 3
+      etag: '"e372c-5db4147e37740"'
+      last_modified: Mon, 28 Mar 2022 06:18:29 GMT
+    notes: >-
+      The preamp (with onboard tuner) in Sam's TOD10N, per the TOD10N spec
+      page. Controls and tuner on p2 (the text layer is jumbled there: read
+      the page visually), battery on p3. The manuals page links it as
+      http://; store https://.
+
+  - id: colour-palette-kalimba-page
+    gear: colour-palette-kalimba
+    title: Colour Palette (Lottie Canto product page)
+    short: Lottie Canto Colour Palette page
+    publisher: Lottie Canto
+    kind: web
+    url: https://lottiecanto.com/shop/p/colourpalette
+    discover:
+      method: none
+    verified:
+      date: 2026-10-10
+    notes: No manual exists; the maker's product page is the only official documentation.

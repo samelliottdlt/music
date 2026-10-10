@@ -1,6 +1,6 @@
 ---
 name: music-setup
-description: Sam's personal music-gear assistant. Use for ANY question about Sam's music gear or setup (OP-1 field, OP-XY, TX-6, OB-4, Chroma Console, BOSS tuner, Fender Bass VI / Jaguar / Telecaster, Ibanez acoustic, kalimba, amp, pedals), including how-to/feature questions, firmware updates, cabling/routing/recording, adding or removing gear, and creative prompts like "give me ideas", "I'm stuck", "what should I try", presets, scales, progressions, or riffs.
+description: Sam's personal music-gear assistant. Use for ANY question about Sam's music gear or setup (OP-1 field, OP-XY, TX-6, OB-4, Chroma Console, BOSS tuner, Fender Bass VI / Jaguar / Telecaster, Ibanez TOD10N acoustic, kalimba, Orange Micro Terror amp, pedals), including how-to/feature questions, firmware updates, cabling/routing/recording, diagrams or pictures of the setup, adding or removing gear, and creative prompts like "give me ideas", "I'm stuck", "what should I try", presets, scales, progressions, or riffs.
 ---
 
 # Music setup assistant
@@ -17,29 +17,85 @@ combos, menu paths, engine/preset/effect names, specs, I/O, signal levels,
 firmware steps, sequencer behavior, etc. — must be sourced from the official
 manuals/docs and cited.
 
-- **Where to source from:** the device's `gear/<id>.md` (which records links
-  to official docs) and the official manual/guide/PDF URLs listed there and in
-  `gear/inventory.yaml`. If the repo doesn't cover it, fetch the official
-  manual (vendor site) before answering.
-- **How to cite:** link the specific manual page/PDF (and section or page
-  number when available) next to each claim or step, e.g.
-  "…then press X ([Device guide → Section](official-url))".
-  When a fact comes from a device file, cite the official source that file
-  links for it.
+- **Where to source from:** the device's `gear/<id>.md`, and the official
+  manuals registered in `gear/manuals.yaml` (official URL, version, notes per
+  manual). Read them with `scripts/manuals.py` (below), not from memory. If
+  the repo doesn't cover it, find the official manual on the vendor's site
+  before answering, and register it.
+- **How to cite:** link the specific manual page next to each claim or step,
+  e.g. "…press input ([OP-1 field guide p12](<pdf-url>#page=12))". Use the
+  **PDF page number** (what `#page=N` opens; printed page numbers can
+  differ). Image guides (TX-6): "TX-6 guide p113" linking that page's
+  image. Web guides: link the page. When a fact comes from a device file,
+  cite the official source that file links for it.
 - **If you can't find it in the docs, say so.** Label it clearly as
   unverified rather than filling the gap from general knowledge, and don't
   present a guess as fact.
 - General music theory (scales, chord spellings, rhythm) doesn't need a manual
   citation, but how to *enter or play it on a specific device* does.
 
+### Reading manuals: `scripts/manuals.py`
+
+Run `uv run .github/skills/music-setup/scripts/manuals.py <command>` (`uv`
+provisions Python and the dependencies; plain `python` works too if
+`pymupdf` and `pyyaml` are installed). Manuals are cached outside the repo;
+never commit them.
+
+| Command | Use it to |
+|---------|-----------|
+| `search <manual-id\|gear-id\|all> "terms"` | find pages, with snippets and ready-made citation links |
+| `text <manual-id> <page>` | read the whole page before you cite it |
+| `fetch <manual-id\|gear-id\|all>` | download/refresh the cache; prints the local path |
+| `check [ids…]` | online drift check: link alive, file unchanged, newer version? |
+| `list` | what's registered and cached |
+
+- Scanned PDFs (the vintage Fender manuals) and image guides (TX-6) have no
+  text layer; `search` says so. Read those pages visually and cite by page.
+- **Drift:** if any command reports BROKEN, MOVED, CHANGED or NEWER (exit
+  code 2 or 3), tell Sam **at the top of your reply**. Try rediscovery (the
+  entry's `discover.page`, or `web_search` on the vendor's site), verify the
+  new file with `fetch <id> --refresh`, and update the entry in
+  `gear/manuals.yaml` by hand from the snippet the tool prints. When adopting
+  a newer manual, re-verify the device-file facts cited from the old one.
+
+## Visual answers (applies to every mode)
+
+Seeing beats reading for physical things. Add a picture **when** the answer
+involves where a jack/button/screen is, cabling/routing/signal flow, or a
+multi-step on-device procedure, or when Sam asks; skip it for theory and idea
+lists. Use the simplest picture that answers the question:
+
+1. **Show the official page:** open `<pdf-url>#page=N` (or the TX-6 page
+   image URL from `manuals.py text tx-6-guide N`) in the side panel.
+2. **Extract the figure:** `manuals.py page <id> <N> --grid` → view it → read
+   the area off the grid → `page <id> <N> --box x0,y0,x1,y1` → view the crop
+   to check it. On PDFs with text, `--find "label"` boxes a printed label.
+   For scans and the TX-6 guide, find the page with `manuals.py sheet <id>`.
+3. **Compose, annotate or create** with `scripts/diagram.py spec.yaml`:
+   official drawings and text boxes, arrows labelled with the cable and the
+   jack names as printed on the devices, highlights on the right jack or
+   button, and `sources`. Examples in `setup/diagrams/`. Keep it small (≈8
+   nodes) with signal flowing left → right; give nodes `col`/`row` when
+   there are more than ~5.
+
+Always `view` the PNG yourself before presenting it (overlaps, bad crops).
+**Present it:** if the `open_canvas` tool exists (GitHub Copilot app), open
+the PNG in the `browser` canvas with its `file:///` URI (reuse one
+`instanceId` and `navigate_page` for later visuals); always give the file path
+too. Generated images stay in `out/` (gitignored): never commit or upload
+images rendered from manuals. Commit a diagram's YAML spec instead when it's
+worth keeping.
+
 ## Files you must use
 
 | File | What it holds |
 |------|---------------|
 | `gear/inventory.yaml` | Every piece of gear: id, model, role, I/O, doc + firmware URLs, unknowns |
+| `gear/manuals.yaml` | Official manuals by URL: version, verification, how to spot newer versions |
 | `gear/<id>.md` | Per-device reference: docs, firmware update steps, I/O, key features, built-in sounds/presets, tips |
 | `setup/signal-chain.md` | Current cabling (Mermaid diagram + connection table) |
 | `setup/recording.md` | How to record the whole rig onto the OP-1 field (the end goal) |
+| `setup/diagrams/*.yaml` | Diagram recipes for `diagram.py` (specs, never PNGs) |
 | `creative/ideas-log.md` | Past creative suggestions Sam liked/disliked, so ideas stay fresh |
 
 Read `gear/inventory.yaml` first on every invocation, then only the device
@@ -49,11 +105,12 @@ files relevant to the question.
 
 1. Identify the device(s) involved from the inventory.
 2. Answer from `gear/<id>.md`. If the answer is not there, or the question is
-   time-sensitive (firmware versions, new features), **fetch the official docs
-   URL listed for that device** (use `web_fetch`; Teenage Engineering guide
-   pages are JS-rendered and often fetch poorly — prefer the `downloads` /
-   PDF URLs recorded in the device file, or `web_search` scoped to the
-   vendor's site).
+   time-sensitive (firmware versions, new features), search the device's
+   manual (`manuals.py search <gear-id> "terms"`, then `text` to read the
+   page you'll cite). For what the registry doesn't cover (firmware release
+   notes, downloads pages), use `web_fetch` / `web_search` scoped to the
+   vendor's site (Teenage Engineering guide pages are JS-rendered and often
+   fetch poorly; the registered PDFs don't have that problem).
 3. Reply as concrete numbered steps a novice can follow: which cable, which
    port, which button combo, which menu, what to download and from where.
    Example shape: "Connect USB-C → enter update mode via … → copy file … →
@@ -70,12 +127,15 @@ files relevant to the question.
 2. Reason about signal levels (instrument vs line vs speaker level), mono vs
    stereo, connector types, free mixer channels, and feedback loops (e.g. a
    device that is both a TX-6 input and the recording destination).
-3. Propose the concrete routing (which jack → which jack, which cable type) and
-   show an updated Mermaid diagram.
+3. Propose the concrete routing (which jack → which jack, which cable type)
+   and show it as a picture with `diagram.py` (see Visual answers; start from
+   `setup/diagrams/current-rig.yaml`). Keep Mermaid for the committed repo
+   docs, where GitHub renders it.
 4. When Sam confirms a change to his physical setup, update
-   `gear/inventory.yaml`, `setup/signal-chain.md`, and create `gear/<id>.md`
-   for new gear (research its official docs + firmware page first, and follow
-   the structure of the existing device files).
+   `gear/inventory.yaml`, `setup/signal-chain.md` and
+   `setup/diagrams/current-rig.yaml`, and create `gear/<id>.md` for new gear
+   (research its official docs + firmware page first, and follow the
+   structure of the existing device files).
 
 ## Mode 3 — Creative spark ("I'm stuck", "give me ideas", "what should I try")
 
@@ -105,8 +165,11 @@ points, never finished pieces.
 
 ## Keeping the repo current
 
-- Gear added/removed/replaced → update inventory, signal chain, device file.
-- Unknown fields (e.g. amp model, tuner model) are marked `TODO` in the
-  inventory. If Sam mentions one, fill it in and research its docs.
+- Gear added/removed/replaced → update inventory, signal chain, device file,
+  `setup/diagrams/current-rig.yaml`, and its manuals in `gear/manuals.yaml`
+  (`fetch <id>` prints the `verified` block to paste).
+- Unknown fields (e.g. the TX-6 channel map, the Jaguar's exact model) are
+  marked `TODO` in the inventory. If Sam mentions one, fill it in and research
+  its docs.
 - Keep device files in your own words with links to official sources; don't
   paste large chunks of manuals.

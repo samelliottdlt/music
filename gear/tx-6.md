@@ -5,7 +5,9 @@ sequencer, and recorder. The center of Sam's setup — everything goes here.
 
 ## Official docs
 
-- User guide: https://teenage.engineering/guides/tx-6
+- User guide: https://teenage.engineering/guides/tx-6 (`tx-6-guide` in
+  `gear/manuals.yaml`). There is no PDF: the guide is 133 page images, so
+  read the pages visually and cite them as "TX-6 guide pN".
 - Product/spec page (best hardware detail): https://teenage.engineering/products/tx-6
 - Downloads / firmware: https://teenage.engineering/downloads/tx-6
 - Browser updater: https://teenage.engineering/apps/update
@@ -29,7 +31,7 @@ Tip from TE: **save your settings to a scene first** (scenes added in 1.3.0).
 | Connector | Details |
 |-----------|---------|
 | Ch 1–6 inputs | 3.5mm stereo, 10 kΩ, 0–42 dB gain, max 13 dBu |
-| Main out | 3.5mm stereo (6.35mm adapter included), max 8 dBu / 2 Vrms |
+| Main out | 6.35 mm stereo jack; comes with a removable 6.35 → 3.5 mm adapter so 3.5 mm cables plug in ([TX-6 guide p8](https://assets.teenage.engineering/_img/66152cf71cfae6ae3cfe3338_original.png)); max 8 dBu / 2 Vrms |
 | Aux out | 3.5mm stereo, same spec as main (configurable "split aux out") |
 | Cue / headphone | 3.5mm TRRS (headset mic supported), max 2 dBu |
 | USB-C | 24-bit/48 kHz audio interface up to 12-in/12-out; USB audio host or device; USB MIDI; USB disk recording/playback (stereo WAV) |
@@ -52,6 +54,7 @@ kalimba sources. TE's "field audio" cables are slim so all six fit.
 ## Tips
 
 - Keep a **channel map** in `setup/signal-chain.md`.
-- Guitar amp into a channel: start with channel gain low; amp line/headphone
-  out is hotter than an instrument.
+- Orange Micro Terror into a channel: its HEADPHONES out, a 1/4in → 3.5mm
+  cable, **mono** input mode, and start with the amp volume and channel gain
+  low (`gear/orange-micro-terror.md`).
 - Recording to OP-1 field: `setup/recording.md`.

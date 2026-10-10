@@ -1,0 +1,55 @@
+# Sam's current rig, as cabled in setup/signal-chain.md, composed from the official drawings
+# (OP-1 field, OP-XY, TX-6, OB-4) plus text boxes for the guitar chain.
+# Keep it in sync with setup/signal-chain.md when the setup changes.
+#
+# Render it (PNG goes to out/visuals/, gitignored; never commit it, the drawings are TE's):
+#   uv run .github/skills/music-setup/scripts/diagram.py setup/diagrams/current-rig.yaml
+title: Sam's rig — current signal chain
+subtitle: Everything goes into the TX-6, and the OB-4 is the only speaker (no amp cabinet). TX-6 channel numbers are still TODO.
+nodes:
+  - {id: strings, label: "Bass VI · Jaguar\nTelecaster · Ibanez TOD10N", note: one at a time, col: 0, row: 0}
+  - {id: chroma, label: Chroma Console, col: 1, row: 0}
+  - {id: amp, label: Orange Micro Terror, note: "amp head, no speaker cabinet:\nkeep HEADPHONES plugged in", col: 2, row: 0}
+  - id: op1
+    label: OP-1 field
+    col: 0
+    row: 1
+    height: 120
+    rotate: -90
+    image: {manual: op-1-field-guide, page: 3, box: [0.602, 0.085, 0.715, 0.915]}
+  - id: opxy
+    label: OP-XY
+    col: 0
+    row: 2
+    height: 120
+    rotate: -90
+    image: {manual: op-xy-guide, page: 5, box: [0.13, 0.12, 0.415, 0.68]}
+  - id: tx6
+    label: TX-6
+    note: mixer
+    col: 2
+    row: 1
+    height: 220
+    image: {manual: tx-6-guide, page: 113, box: [0.418, 0.598, 0.548, 0.852]}
+  - id: ob4
+    label: OB-4
+    note: the only speaker
+    col: 3
+    row: 1
+    height: 190
+    image: {manual: tx-6-guide, page: 113, box: [0.643, 0.565, 0.8, 0.855]}
+  - {id: kalimba, label: Colour Palette kalimba, note: not connected yet, style: dashed, col: 0, row: 3}
+edges:
+  - {from: strings, to: chroma, label: 1/4in → INPUT L}
+  - {from: chroma, to: amp, label: OUTPUT L → INPUT}
+  - {from: amp, to: tx6, label: "HEADPHONES (CabSim), 1/4in → 3.5 mm, mono mode\nnever the speaker outputs", color: "#e4572e"}
+  - {from: op1, to: tx6, label: 3.5 mm stereo}
+  - {from: opxy, to: tx6, label: 3.5 mm stereo, to_side: bottom}
+  - {from: tx6, to: ob4, label: "main out → line in\n3.5 mm stereo, 3-pole"}
+groups:
+  - {label: Pedalboard, nodes: [chroma]}
+sources:
+  - "Connections and cables: setup/signal-chain.md. Jack names: Chroma Console manual p42 (INPUT L / OUTPUT L),
+    Micro Terror manual p3 (INPUT; HEADPHONES with CabSim, also for a mixer), TX-6 guide p8 (main out: a
+    6.35 mm jack with a removable 3.5 mm adapter) and p23 (mono input mode), OB-4 guide (line input, 3-pole
+    cable)."

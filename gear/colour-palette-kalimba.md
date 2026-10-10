@@ -2,13 +2,12 @@
 
 A 17-key C-major kalimba built into a guitar-pedal-style aluminum enclosure,
 with a contact mic and onboard effects. Made by UK builder Lottie Canto.
-(Identified from Sam's description "kalimba called the color palette" —
-confirm it matches.)
 
 ## Official docs
 
 - Maker's product page (the only official doc — no manual PDF):
-  https://lottiecanto.com/shop/p/colourpalette
+  https://lottiecanto.com/shop/p/colourpalette (`colour-palette-kalimba-page`
+  in `gear/manuals.yaml`)
 
 ## Controls and I/O
 

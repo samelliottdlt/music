@@ -1,0 +1,28 @@
+# Chroma Console: the four effect modules inside the pedal, in their default order.
+# A pure "created" diagram (text boxes only, no manual drawings).
+#
+# Render it (PNG goes to out/visuals/, gitignored):
+#   uv run .github/skills/music-setup/scripts/diagram.py setup/diagrams/chroma-console-modules.yaml
+title: Chroma Console — what's inside
+subtitle: One effect per module, in series. This is the default order; you can re-order them per preset.
+nodes:
+  - {id: in, label: INPUT L, note: from the guitar or bass, col: 0, row: 0}
+  - {id: character, label: 1  Character, note: "Drive · Sweeten · Fuzz\nHowl · Swell", col: 1, row: 0}
+  - {id: movement, label: 2  Movement, note: "Doubler · Vibrato · Phaser\nTremolo · Pitch", col: 2, row: 0}
+  - {id: diffusion, label: 3  Diffusion, note: "Cascade · Reels · Space\nCollage · Reverse", col: 3, row: 0}
+  - {id: texture, label: 4  Texture, note: "Filter · Squash · Cassette\nBroken · Interference", col: 4, row: 0}
+  - {id: out, label: OUTPUT L, note: to the Orange Micro Terror, col: 5, row: 0}
+edges:
+  - {from: in, to: character}
+  - {from: character, to: movement}
+  - {from: movement, to: diffusion}
+  - {from: diffusion, to: texture}
+  - {from: texture, to: out}
+groups:
+  - label: "Chroma Console · re-order: press A + D together, then tap the modules in the new order"
+    nodes: [character, movement, diffusion, texture]
+sources:
+  - "Default module order and FX SETUP re-ordering: Chroma Console manual p26. Effects per module:
+    pp11–18 and the MIDI chart on p46. Jacks: p42 (INPUT L / OUTPUT L; with a mono guitar either input
+    and either output works, p43). (gear/manuals.yaml: chroma-console-manual)"
+  - "Where it sits in Sam's chain: setup/signal-chain.md"
