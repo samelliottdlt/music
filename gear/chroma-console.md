@@ -7,6 +7,7 @@ pedal before the amp.
 
 - Product page: https://www.hologramelectronics.com/pages/chroma-console
 - Manual: https://www.hologramelectronics.com/pages/chroma-console-manual
+  (the PDF, firmware V1.04, is `chroma-console-manual` in `gear/manuals.yaml`)
 - Firmware: https://www.hologramelectronics.com/pages/chroma-console-firmware
 - Support: https://www.hologramelectronics.com/pages/support
 

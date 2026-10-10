@@ -5,7 +5,8 @@ Portable "magic radio" speaker. Used as the monitor for the TX-6 mix.
 
 ## Official docs
 
-- User guide: https://teenage.engineering/guides/ob-4
+- User guide: https://teenage.engineering/guides/ob-4 (`ob-4-guide` in
+  `gear/manuals.yaml`; a web page, no PDF; `manuals.py search ob-4 "…"`)
 - Product/spec page: https://teenage.engineering/products/ob-4
 - Companion app: **orthoplay** (iOS / Android)
 

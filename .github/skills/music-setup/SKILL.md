@@ -17,26 +17,53 @@ combos, menu paths, engine/preset/effect names, specs, I/O, signal levels,
 firmware steps, sequencer behavior, etc. — must be sourced from the official
 manuals/docs and cited.
 
-- **Where to source from:** the device's `gear/<id>.md` (which records links
-  to official docs) and the official manual/guide/PDF URLs listed there and in
-  `gear/inventory.yaml`. If the repo doesn't cover it, fetch the official
-  manual (vendor site) before answering.
-- **How to cite:** link the specific manual page/PDF (and section or page
-  number when available) next to each claim or step, e.g.
-  "…then press X ([Device guide → Section](official-url))".
-  When a fact comes from a device file, cite the official source that file
-  links for it.
+- **Where to source from:** the device's `gear/<id>.md`, and the official
+  manuals registered in `gear/manuals.yaml` (official URL, version, notes per
+  manual). Read them with `scripts/manuals.py` (below), not from memory. If
+  the repo doesn't cover it, find the official manual on the vendor's site
+  before answering, and register it.
+- **How to cite:** link the specific manual page next to each claim or step,
+  e.g. "…press input ([OP-1 field guide p12](<pdf-url>#page=12))". Use the
+  **PDF page number** (what `#page=N` opens; printed page numbers can
+  differ). Image guides (TX-6): "TX-6 guide p113" linking that page's
+  image. Web guides: link the page. When a fact comes from a device file,
+  cite the official source that file links for it.
 - **If you can't find it in the docs, say so.** Label it clearly as
   unverified rather than filling the gap from general knowledge, and don't
   present a guess as fact.
 - General music theory (scales, chord spellings, rhythm) doesn't need a manual
   citation, but how to *enter or play it on a specific device* does.
 
+### Reading manuals: `scripts/manuals.py`
+
+Run `uv run .github/skills/music-setup/scripts/manuals.py <command>` (`uv`
+provisions Python and the dependencies; plain `python` works too if
+`pymupdf` and `pyyaml` are installed). Manuals are cached outside the repo;
+never commit them.
+
+| Command | Use it to |
+|---------|-----------|
+| `search <manual-id\|gear-id\|all> "terms"` | find pages, with snippets and ready-made citation links |
+| `text <manual-id> <page>` | read the whole page before you cite it |
+| `fetch <manual-id\|gear-id\|all>` | download/refresh the cache; prints the local path |
+| `check [ids…]` | online drift check: link alive, file unchanged, newer version? |
+| `list` | what's registered and cached |
+
+- Scanned PDFs (the vintage Fender manuals) and image guides (TX-6) have no
+  text layer; `search` says so. Read those pages visually and cite by page.
+- **Drift:** if any command reports BROKEN, MOVED, CHANGED or NEWER (exit
+  code 2 or 3), tell Sam **at the top of your reply**. Try rediscovery (the
+  entry's `discover.page`, or `web_search` on the vendor's site), verify the
+  new file with `fetch <id> --refresh`, and update the entry in
+  `gear/manuals.yaml` by hand from the snippet the tool prints. When adopting
+  a newer manual, re-verify the device-file facts cited from the old one.
+
 ## Files you must use
 
 | File | What it holds |
 |------|---------------|
 | `gear/inventory.yaml` | Every piece of gear: id, model, role, I/O, doc + firmware URLs, unknowns |
+| `gear/manuals.yaml` | Official manuals by URL: version, verification, how to spot newer versions |
 | `gear/<id>.md` | Per-device reference: docs, firmware update steps, I/O, key features, built-in sounds/presets, tips |
 | `setup/signal-chain.md` | Current cabling (Mermaid diagram + connection table) |
 | `setup/recording.md` | How to record the whole rig onto the OP-1 field (the end goal) |
@@ -49,11 +76,12 @@ files relevant to the question.
 
 1. Identify the device(s) involved from the inventory.
 2. Answer from `gear/<id>.md`. If the answer is not there, or the question is
-   time-sensitive (firmware versions, new features), **fetch the official docs
-   URL listed for that device** (use `web_fetch`; Teenage Engineering guide
-   pages are JS-rendered and often fetch poorly — prefer the `downloads` /
-   PDF URLs recorded in the device file, or `web_search` scoped to the
-   vendor's site).
+   time-sensitive (firmware versions, new features), search the device's
+   manual (`manuals.py search <gear-id> "terms"`, then `text` to read the
+   page you'll cite). For what the registry doesn't cover (firmware release
+   notes, downloads pages), use `web_fetch` / `web_search` scoped to the
+   vendor's site (Teenage Engineering guide pages are JS-rendered and often
+   fetch poorly; the registered PDFs don't have that problem).
 3. Reply as concrete numbered steps a novice can follow: which cable, which
    port, which button combo, which menu, what to download and from where.
    Example shape: "Connect USB-C → enter update mode via … → copy file … →
@@ -105,7 +133,9 @@ points, never finished pieces.
 
 ## Keeping the repo current
 
-- Gear added/removed/replaced → update inventory, signal chain, device file.
+- Gear added/removed/replaced → update inventory, signal chain, device file,
+  and its manuals in `gear/manuals.yaml` (`fetch <id>` prints the
+  `verified` block to paste).
 - Unknown fields (e.g. amp model, tuner model) are marked `TODO` in the
   inventory. If Sam mentions one, fill it in and research its docs.
 - Keep device files in your own words with links to official sources; don't

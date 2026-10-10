@@ -1,5 +1,6 @@
 # Source of truth for Sam's music gear.
 # Each item links to a detailed reference in gear/<id>.md.
+# Official manuals (PDFs/guides) are registered by URL in gear/manuals.yaml.
 # Use `TODO` for anything not yet known; fill it in when Sam mentions it.
 
 last_reviewed: 2026-10-09
@@ -72,7 +73,6 @@ gear:
     inputs: ["INPUT 1/4in"]
     outputs: ["OUTPUT 1/4in (muted while tuning)", "BYPASS 1/4in (always dry)", "DC OUT 9V"]
     docs: https://www.boss.info/us/products/tu-3/features/
-    manual_pdf: https://static.roland.com/assets/media/pdf/TU-3_OM.pdf
     details: gear/boss-tuner.md
 
   - id: chroma-console

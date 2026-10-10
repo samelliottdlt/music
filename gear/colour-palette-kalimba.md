@@ -8,7 +8,8 @@ confirm it matches.)
 ## Official docs
 
 - Maker's product page (the only official doc — no manual PDF):
-  https://lottiecanto.com/shop/p/colourpalette
+  https://lottiecanto.com/shop/p/colourpalette (`colour-palette-kalimba-page`
+  in `gear/manuals.yaml`)
 
 ## Controls and I/O
 

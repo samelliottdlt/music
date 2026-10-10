@@ -5,6 +5,8 @@ Classic two-pickup solid-body electric. Variant **TODO**.
 ## Official docs
 
 - Guitar owner's manuals: https://support.fender.com/hc/en-us/articles/42585217965083-Fender-Guitar-Owner-s-Manuals
+  (the 2013 general manual is `fender-electric-guitar-manual` in
+  `gear/manuals.yaml`)
 - Telecaster setup: https://support.fender.com/hc/en-us/articles/42584668122011-How-do-I-set-up-my-Telecaster-guitar-properly
 - Wiring diagrams: https://support.fender.com/en-US/parts-diagrams/telecaster-guitars/
 - Factory setup specs: https://support.fender.com/hc/en-us/articles/42507226762651-What-are-factory-setup-specs

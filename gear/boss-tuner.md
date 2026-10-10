@@ -6,7 +6,8 @@ or TU-3S (no footswitch, always-on). Info below is for the TU-3.
 ## Official docs
 
 - Product page: https://www.boss.info/us/products/tu-3/features/
-- Owner's manual PDF: https://static.roland.com/assets/media/pdf/TU-3_OM.pdf
+- Owner's manual PDF: `boss-tu-3-manual` in `gear/manuals.yaml` (English is
+  on PDF p1)
 
 No firmware — it's an analog-style pedal; nothing to update.
 

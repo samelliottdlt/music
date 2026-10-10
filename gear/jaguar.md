@@ -7,6 +7,9 @@ Variant **TODO**.
 
 - Jaguar controls explained (Fender): https://www.fender.com/articles/instruments/jaguar-controls-past-and-present-what-you-need-to-know
 - Guitar owner's manuals: https://support.fender.com/hc/en-us/articles/42585217965083-Fender-Guitar-Owner-s-Manuals
+  (registered in `gear/manuals.yaml`: `fender-electric-guitar-manual`, the
+  2013 general manual, and `fender-jaguar-vintage`, a scanned vintage Jaguar
+  instruction manual with controls diagrams)
 - Factory setup specs: https://support.fender.com/hc/en-us/articles/42507226762651-What-are-factory-setup-specs
 
 ## Controls (classic layout)

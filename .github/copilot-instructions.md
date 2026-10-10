@@ -8,3 +8,7 @@ source of truth for what gear exists.
 Don't rely on training data for gear-specific facts or recommendations: source
 them from the official manuals/docs linked in the repo and cite them (see the
 "Sourcing rule" in the skill).
+
+Official manuals are registered by URL in `gear/manuals.yaml` (never commit
+the files); fetch, search and cite them with
+`.github/skills/music-setup/scripts/manuals.py`.

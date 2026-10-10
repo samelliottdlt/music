@@ -5,7 +5,9 @@ Model **TODO** — check the label inside the soundhole and record it here.
 ## Official docs
 
 - Ibanez acoustic guitar manuals: https://www.ibanez.com/usa/support/manual/acoustic_guitars.html
-- Manual portal: https://www.ibanez.com/world/support/manual/
+- Manual portal: https://www.ibanez.com/world/support/manual/ (the general
+  acoustic guitar manual is `ibanez-acoustic-manual` in `gear/manuals.yaml`;
+  add the preamp manual for Sam's model once it's known)
 - FAQ: https://www.ibanez.com/na/support/faq/
 
 ## Electronics (if acoustic-electric)

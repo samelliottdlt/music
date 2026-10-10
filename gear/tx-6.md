@@ -5,7 +5,9 @@ sequencer, and recorder. The center of Sam's setup — everything goes here.
 
 ## Official docs
 
-- User guide: https://teenage.engineering/guides/tx-6
+- User guide: https://teenage.engineering/guides/tx-6 (`tx-6-guide` in
+  `gear/manuals.yaml`). There is no PDF: the guide is 133 page images, so
+  read the pages visually and cite them as "TX-6 guide pN".
 - Product/spec page (best hardware detail): https://teenage.engineering/products/tx-6
 - Downloads / firmware: https://teenage.engineering/downloads/tx-6
 - Browser updater: https://teenage.engineering/apps/update

@@ -7,11 +7,13 @@ Sam's music setup, tracked as code — plus a Copilot skill that knows it.
 | Path | Purpose |
 |------|---------|
 | `gear/inventory.yaml` | Source of truth: every piece of gear, docs + firmware links |
+| `gear/manuals.yaml` | Official manuals, by URL (never the files themselves) |
 | `gear/<id>.md` | Per-device reference: firmware updates, I/O, features, built-in sounds |
 | `setup/signal-chain.md` | How everything is cabled today (diagram + table) |
 | `setup/recording.md` | Plan for recording the whole rig onto the OP-1 field |
 | `creative/ideas-log.md` | Log of creative suggestions and how they landed |
 | `.github/skills/music-setup/SKILL.md` | The Copilot skill |
+| `.github/skills/music-setup/scripts/` | The skill's tools (manuals) |
 
 ## Using the skill
 
@@ -25,6 +27,29 @@ Open Copilot in this repo and just ask. Examples:
 
 The skill answers from this repo and the official docs, and updates these
 files as the setup changes.
+
+## Manuals
+
+Official manuals are **linked, not stored**: `gear/manuals.yaml` records each
+one's official URL, version and checksum. The skill downloads them on demand
+into a cache outside the repo (`~/.cache/music-manuals`) and cites exact
+pages. Why links instead of committed PDFs: this repo is public and the
+manuals are the vendors' copyrighted material; some are big (the OP-XY guide
+is ~30 MB, and every revision would stay in git history); and a stored copy
+silently drifts from the official one after firmware updates. Each manual
+downloads in about a second, and `check` notices when a link breaks or a
+newer version is published, so the skill can tell you and fix the registry.
+
+Needs [uv](https://docs.astral.sh/uv/), which provisions Python and the
+dependencies automatically:
+
+```powershell
+uv run .github/skills/music-setup/scripts/manuals.py list
+uv run .github/skills/music-setup/scripts/manuals.py search op-1-field "input"
+uv run .github/skills/music-setup/scripts/manuals.py text op-1-field-guide 12
+uv run .github/skills/music-setup/scripts/manuals.py check   # links alive? anything newer?
+uv run .github/skills/music-setup/scripts/tests/test_offline.py   # offline smoke tests
+```
 
 ## Current setup
 

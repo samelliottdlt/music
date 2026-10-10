@@ -7,6 +7,9 @@ E1 A1 D2 G2 B2 E3. Covers bass and baritone-guitar range. Variant **TODO**
 ## Official docs
 
 - Fender bass owner's manuals: https://support.fender.com/hc/en-us/articles/42585248961563-Fender-Bass-Guitar-Owner-s-Manuals
+  (registered in `gear/manuals.yaml`: `fender-bass-manual`, the 2013 general
+  bass manual, and `fender-bass-vi-1962`, a scanned vintage Bass VI
+  instruction manual)
 - Squier Classic Vibe Bass VI: https://www.fender.com/products/classic-vibe-bass-vi
 - Factory setup specs: https://support.fender.com/hc/en-us/articles/42507226762651-What-are-factory-setup-specs
 

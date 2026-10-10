@@ -1,7 +1,7 @@
 # Guitar amplifier
 
-Model **TODO**. Once known, add its manual link and which output feeds the
-TX-6.
+Model **TODO**. Once known, register its manual in `gear/manuals.yaml` and
+note which output feeds the TX-6.
 
 ## Getting the amp into the TX-6 safely
 
