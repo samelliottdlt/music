@@ -39,9 +39,12 @@ chromatic mode.
 
 ## Using it with the rig
 
-- Not connected yet. Options:
-  1. **Into the pedalboard** (front) → Chroma Console → amp → TX-6. Great for
-     ambient textures (Collage, Reverse, Cassette).
-  2. **Straight into a TX-6 channel** (1/4in → 3.5mm) for a clean signal.
+- Plugged in like the other instruments: kalimba → Chroma Console → Orange
+  Micro Terror → TX-6 (`setup/signal-chain.md`). Its own Mode / Adjust / Mix
+  effects come first, then the Chroma Console's.
+- The amp adds a guitar-cabinet sound (CabSim) and is mono. For a cleaner or
+  stereo kalimba, try skipping the amp (`gear/orange-micro-terror.md`,
+  "Using it for non-guitar instruments"), or plug it straight into a free
+  TX-6 channel (1/4in → 3.5mm, mono mode).
 - It's in C major, so it pairs with A minor / C major ideas on the other gear
   (set the OP-XY brain to C major / A minor).

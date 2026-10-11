@@ -54,3 +54,30 @@ Specs: 20 W, valve preamp (1 × 12AX7/ECC83), output impedance 8–16 Ω.
    ([p3](https://cdn.shopify.com/s/files/1/0943/5250/7206/files/Micro_Terror_-_Word_Manual_2025_V1.0_EN.pdf?v=1758622989#page=3)).
    Sam has no cabinet, so the HEADPHONES cable stays in (see the top of this
    file).
+
+## Using it for non-guitar instruments
+
+Sam runs every instrument through it (Bass VI, Jaguar, Telecaster, Ibanez
+TOD10N, Colour Palette kalimba). What the manual says that matters for that
+([p3](https://cdn.shopify.com/s/files/1/0943/5250/7206/files/Micro_Terror_-_Word_Manual_2025_V1.0_EN.pdf?v=1758622989#page=3)):
+
+- The HEADPHONES out (the one feeding the TX-6) always has the CabSim, which
+  recreates an Orange 4×12 guitar cabinet. The manual lists no way to turn it
+  off. Great for the electrics; it colors the nylon acoustic and the kalimba.
+- GAIN goes from clean (low) to heavy distortion (high), and at zero there's
+  no sound. For the cleanest sound, keep GAIN just above zero and make up the
+  level with VOLUME and the TX-6 channel gain.
+- One INPUT: anything stereo before it (the Chroma Console's stereo effects)
+  ends up mono.
+- How the CabSim affects the Bass VI's low end isn't in the manual: unverified.
+
+**Skipping the amp** (an option, for the kalimba / nylon, or for stereo
+effects): the Chroma Console makes stereo from a mono input when both outputs
+are connected; its output impedance is under 1 kΩ
+([Chroma Console manual p43](https://cdn.shopify.com/s/files/1/0920/2928/8752/files/CC_manual_WEB.pdf?v=1758823440#page=43)).
+The TX-6 inputs are 3.5mm stereo with 0–42 dB of gain (`gear/tx-6.md`) and
+have a stereo input mode, the default
+([TX-6 guide p24](https://assets.teenage.engineering/_img/66152cee1cfae6ae3cfe32c4_original.png)).
+So OUTPUT L + R → a dual 1/4in → 3.5mm stereo cable → a free TX-6 channel in
+stereo mode should work (not yet tried on this rig). If the amp is switched
+on, its HEADPHONES → TX-6 cable must still stay plugged in (top of this file).
