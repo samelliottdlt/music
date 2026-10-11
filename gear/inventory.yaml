@@ -54,7 +54,7 @@ gear:
     role: 17-key C-major kalimba in a pedal enclosure with contact mic + 8 onboard reverb/delay effects
     power: 9V DC center-negative (pedal supply)  # third-party sourced, verify on unit
     outputs: ["1/4in mono out"]
-    connects_to: TODO  # not yet part of the chain
+    connects_to: chroma-console  # same path as the other instruments, one at a time
     docs: https://lottiecanto.com/shop/p/colourpalette
     details: gear/colour-palette-kalimba.md
 

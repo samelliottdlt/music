@@ -1,6 +1,6 @@
 # Current signal chain
 
-Last updated: 2026-10-10
+Last updated: 2026-10-11
 
 ```mermaid
 flowchart LR
@@ -9,13 +9,14 @@ flowchart LR
         JAG[Fender Jaguar<br/>Japan, ~2007–08]
         TELE[Fender Standard<br/>Telecaster]
         IBZ[Ibanez TOD10N<br/>nylon, acoustic-electric]
+        KAL[Lottie Canto Colour Palette<br/>kalimba]
     end
 
     subgraph Pedalboard
         CHROMA[Hologram<br/>Chroma Console]
     end
 
-    BVI & JAG & TELE & IBZ -->|1/4in, one at a time| CHROMA
+    BVI & JAG & TELE & IBZ & KAL -->|1/4in, one at a time| CHROMA
     CHROMA --> AMP[Orange Micro Terror<br/>amp head, no speaker cab]
     AMP -->|HEADPHONES out, CabSim<br/>keep plugged in while the amp is on<br/>never the speaker outputs| TX6
 
@@ -23,10 +24,6 @@ flowchart LR
     OPXY[OP-XY] -->|3.5mm stereo| TX6
 
     TX6[TX-6 mixer] -->|main out 3.5mm| OB4[OB-4<br/>the only speaker]
-
-    KAL[Colour Palette kalimba]:::notconnected
-
-    classDef notconnected stroke-dasharray: 5 5
 ```
 
 A picture of the same chain built from the official drawings:
@@ -37,13 +34,12 @@ keep it in sync with this file).
 
 | From | Out jack | To | In jack | Cable | Notes |
 |------|----------|----|---------|-------|-------|
-| Bass VI / Jaguar / Telecaster / Ibanez TOD10N | 1/4in | Chroma Console | INPUT L | instrument cable | one instrument at a time |
+| Bass VI / Jaguar / Telecaster / Ibanez TOD10N / Colour Palette kalimba | 1/4in | Chroma Console | INPUT L | instrument cable | one instrument at a time |
 | Chroma Console | OUTPUT L | Orange Micro Terror | INPUT | instrument cable | |
 | Orange Micro Terror | HEADPHONES (1/4in, CabSim) | TX-6 | channel TODO, mono mode | 1/4in → 3.5mm | **never** the speaker outputs |
 | OP-1 field | 3.5mm out | TX-6 | channel TODO | 3.5mm stereo | |
 | OP-XY | 3.5mm out | TX-6 | channel TODO | 3.5mm stereo | |
 | TX-6 | main out | OB-4 | line in (top panel) | 3.5mm stereo, 3-pole | the only speaker |
-| Colour Palette kalimba | 1/4in mono | — | — | — | not in the chain yet |
 
 ## TX-6 channel map
 
@@ -88,7 +84,14 @@ guitar-like tone from the Bass VI (`gear/bass-vi.md`).
   ([Micro Terror manual p3](https://cdn.shopify.com/s/files/1/0943/5250/7206/files/Micro_Terror_-_Word_Manual_2025_V1.0_EN.pdf?v=1758622989#page=3)),
   so **keep the HEADPHONES → TX-6 cable plugged in whenever the amp is on**.
   Details: `gear/orange-micro-terror.md`.
-- **Kalimba options:** its 1/4in out can go into the front of the pedalboard
-  (to use the Chroma Console on it) or straight into a free TX-6 channel via a
-  1/4in → 3.5mm cable.
+- **One amp for every instrument:** the Micro Terror is a guitar amp, and its
+  HEADPHONES out always has the CabSim (an Orange 4×12 guitar cabinet sound),
+  with no switch for it in the manual. GAIN can't go to zero either ("no sound
+  will be heard"), so the valve preamp is always in the path
+  ([Micro Terror manual p3](https://cdn.shopify.com/s/files/1/0943/5250/7206/files/Micro_Terror_-_Word_Manual_2025_V1.0_EN.pdf?v=1758622989#page=3)).
+  The amp has one input, so the Chroma Console's stereo effects end up mono.
+  For the kalimba and the nylon acoustic, an option to try is skipping the
+  amp: Chroma Console OUTPUT L + R (or the instrument straight) into a TX-6
+  channel (see `gear/orange-micro-terror.md`, "Using it for non-guitar
+  instruments").
 - **Recording goal:** see `setup/recording.md`.
