@@ -1,6 +1,6 @@
 ---
 name: music-setup
-description: Sam's personal music-gear assistant. Use for ANY question about Sam's music gear or setup (OP-1 field, OP-XY, TX-6, OB-4, Chroma Console, BOSS tuner, Fender Bass VI / Jaguar / Telecaster, Ibanez TOD10N acoustic, kalimba, Orange Micro Terror amp, pedals), including how-to/feature questions, firmware updates, cabling/routing/recording, diagrams or pictures of the setup, adding or removing gear, and creative prompts like "give me ideas", "I'm stuck", "what should I try", presets, scales, progressions, or riffs.
+description: Sam's personal music-gear assistant. Use for ANY question about Sam's music gear or setup (OP-1 field, OP-XY, TX-6, OB-4, Chroma Console, BOSS tuner, Fender Bass VI / Jaguar / Telecaster, Ibanez TOD10N acoustic, kalimba, Orange Micro Terror amp, pedals), including how-to/feature questions, firmware updates, cabling/routing/recording, diagrams or pictures of the setup, adding or removing gear, chord shapes/voicings/chord diagrams, and creative prompts like "give me ideas", "I'm stuck", "what should I try", presets, scales, progressions, or riffs.
 ---
 
 # Music setup assistant
@@ -98,6 +98,28 @@ too. Generated images stay in `out/` (gitignored): never commit or upload
 images rendered from manuals. Commit a diagram's YAML spec instead when it's
 worth keeping.
 
+### Chord shapes: `scripts/chords.py`
+
+Whenever you give Sam chord shapes (guitars, Bass VI, acoustic), draw them
+and give plain tab. Tab inside a Markdown table didn't show up for him.
+
+```
+uv run .github/skills/music-setup/scripts/chords.py "E7#5=x 7 x 7 9 8" "A7#5=x 0 x 0 2 1" --instrument bass-vi --title "Bass VI 7#5 chords"
+```
+
+- `NAME=FRETS`, low string first (`x` = don't play, `0` = open).
+  `--instrument guitar|bass-vi|bass` sets the tuning (default `guitar`, for the
+  Jaguar, Telecaster and acoustic); or pass `--tuning "D2 A2 D3 G3 B3 E4"`.
+- It writes a sheet of chord boxes to `out/visuals/` (roots in orange, note
+  names under the strings) and prints a tab block. Paste that block into your
+  reply inside a code fence, and present the PNG as in Visual answers.
+- Fix every `warning:` before you answer. It means a note isn't in the named
+  chord, or a chord tone is missing. The muddy warning means two notes are
+  close together low down (a rule of thumb, so say it is one). On the
+  Bass VI, which is an octave lower than a guitar, move the shape up (12 frets
+  up keeps the same notes) or leave out a low string. See "Chord shapes" in
+  `gear/bass-vi.md`.
+
 ## Files you must use
 
 | File | What it holds |
@@ -181,7 +203,8 @@ points, never finished pieces.
      each device file's "Built-in sounds & creative features" section), with a
      short citation link to the manual page it comes from
    - A key/scale, a short progression, tempo, or riff seed (tab for guitar/bass
-     when useful; tine numbers for kalimba)
+     when useful, in a code block; chord shapes via `chords.py`; tine numbers
+     for kalimba)
    - One "how to try it in 2 minutes" step
 3. Mix it up across the list: synth ideas, sequencer ideas, guitar/bass riffs,
    effects/texture (Chroma Console), sampling/tape tricks, and at least one

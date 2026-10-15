@@ -61,7 +61,8 @@ arrows labelled with the cable and the jack names, with the right jack
 highlighted. Images are written to `out/` (gitignored, never committed: they
 contain the vendors' drawings); diagrams worth keeping are committed as small
 YAML recipes in `setup/diagrams/`, e.g. the current rig, recording mode and
-the Bass VI tone recipe.
+the Bass VI tone recipe. Chord shapes come out as chord diagrams plus
+plain-text tab, checked against the chord name.
 
 ```powershell
 uv run .github/skills/music-setup/scripts/manuals.py page op-1-field-guide 4 --grid     # plan a crop
@@ -69,6 +70,7 @@ uv run .github/skills/music-setup/scripts/manuals.py page op-1-field-guide 4 --b
 uv run .github/skills/music-setup/scripts/manuals.py sheet tx-6-guide                    # page thumbnails
 uv run .github/skills/music-setup/scripts/diagram.py setup/diagrams/recording-mode.yaml
 uv run .github/skills/music-setup/scripts/diagram.py setup/diagrams/bass-vi-guitar-tone.yaml --focus bass  # + one node enlarged
+uv run .github/skills/music-setup/scripts/chords.py "E7#5=x 7 x 7 9 8" "A7#5=x 0 x 0 2 1" --instrument bass-vi  # chord diagrams + tab
 ```
 
 ## Current setup

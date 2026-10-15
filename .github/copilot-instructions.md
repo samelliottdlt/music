@@ -13,4 +13,5 @@ Official manuals are registered by URL in `gear/manuals.yaml` (never commit
 the files); fetch, search and cite them with
 `.github/skills/music-setup/scripts/manuals.py`. Show official pages, crops and
 composed diagrams (`manuals.py page`/`sheet`, `diagram.py`) when a picture
-helps; generated images go to `out/` and are never committed.
+helps, and draw chord shapes with `chords.py` (plus a plain-text tab block);
+generated images go to `out/` and are never committed.
