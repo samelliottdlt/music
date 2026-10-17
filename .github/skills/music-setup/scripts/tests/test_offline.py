@@ -351,5 +351,78 @@ def test_recipes_reference_registered_manual_pages(path):
             manuals.parse_box(hl.get("box") or hl["page_box"])
 
 
+# ------------------------------------------------------------------- chords --
+
+import chords  # noqa: E402
+
+BASS_VI = chords.parse_tuning(chords.INSTRUMENTS["bass-vi"])
+
+
+def test_pitch_and_tuning():
+    assert chords.pitch("G#2") == (8, 44) and chords.pitch("Bb") == (10, None)
+    assert chords.pitch("Cb4") == (11, 59) and chords.pitch("B#3") == (0, 60)
+    assert [n for n, _ in BASS_VI] == [4, 9, 2, 7, 11, 4] and BASS_VI[0][1] == 28  # E1
+    with pytest.raises(chords.ChordError):
+        chords.pitch("H2")
+    with pytest.raises(chords.ChordError):
+        chords.parse_tuning("E A")
+
+
+def test_parse_frets():
+    assert chords.parse_frets("x 7 x 7 9 8", 6) == [None, 7, None, 7, 9, 8]
+    assert chords.parse_frets("x02210", 6) == [None, 0, 2, 2, 1, 0]
+    assert chords.parse_frets("x,10,x,10,12,11", 6) == [None, 10, None, 10, 12, 11]
+    for bad in ("x 7 x 7 9", "x x x x x x", "x 7 x 7 9 q", "x 7 x 7 9 30"):
+        with pytest.raises(chords.ChordError):
+            chords.parse_frets(bad, 6)
+
+
+@pytest.mark.parametrize("name,frets", [("E7#5", "x 7 x 7 9 8"), ("E+7", "x 7 x 7 9 8"), ("A7♯5", "x 0 x 0 2 1"),
+                                        ("C7#5", "x 3 x 3 5 4"), ("G7#5", "3 x 3 4 4 x"), ("D7#5", "x x 0 3 1 2"),
+                                        ("Am", "x 0 2 2 1 0"), ("C/G", "3 3 2 0 1 0"), ("Bbmaj7", "x 1 3 2 3 1"),
+                                        ("F#m7b5", "2 x 2 2 1 x"), ("Dm(maj7)", "x x 0 2 2 1")])
+def test_correct_shapes_pass_the_check(name, frets):
+    c = chords.analyse(name, chords.parse_frets(frets, 6), chords.parse_tuning(chords.INSTRUMENTS["guitar"]))
+    assert c.warnings == [], c.warnings
+
+
+def test_wrong_shapes_and_unknown_names_warn():
+    guitar = chords.parse_tuning(chords.INSTRUMENTS["guitar"])
+    (w,) = chords.analyse("E7", chords.parse_frets("x 7 x 7 9 8", 6), guitar).warnings  # that's E7#5
+    assert "C not in the chord" in w
+    (w,) = chords.analyse("A7", chords.parse_frets("x 0 2 2 2 0", 6), guitar).warnings  # plain A major
+    assert "missing G" in w
+    (w,) = chords.analyse("C/E", chords.parse_frets("x 3 2 0 1 0", 6), guitar).warnings
+    assert "lowest note is C" in w
+    (w,) = chords.analyse("C13#11", chords.parse_frets("x 3 2 0 1 0", 6), guitar).warnings
+    assert "unknown chord type" in w
+    with pytest.raises(chords.ChordError):
+        chords.parse_name("H7")
+
+
+def test_muddy_low_voicings_on_the_bass_vi():
+    low = chords.analyse("E7#5", chords.parse_frets("0 x 0 1 1 0", 6), BASS_VI)
+    high = chords.analyse("E7#5", chords.parse_frets("x 7 x 7 9 8", 6), BASS_VI)
+    assert low.muddy and "G#2–C3" in low.warnings[0]
+    assert not high.muddy and high.warnings == []
+    guitar = chords.parse_tuning(chords.INSTRUMENTS["guitar"])
+    assert not chords.analyse("E7#5", chords.parse_frets("0 x 0 1 1 0", 6), guitar).muddy
+    assert not chords.analyse("E7#5", chords.parse_frets("0 x 0 1 1 0", 6), chords.parse_tuning("E A D G B E")).muddy
+
+
+def test_chords_main_writes_png_and_tab(tmp_path, capsys):
+    out = tmp_path / "c.png"
+    assert chords.main(["E7#5=x 7 x 7 9 8", "Bass=12 x x x x x", "-o", str(out), "--instrument", "bass-vi",
+                        "--title", "t"]) == 0
+    printed = capsys.readouterr().out
+    assert "E7#5   x  7  x  7  9  8" in printed and "Bass   12 x" in printed
+    assert "warning: Bass: unknown chord type" in printed
+    with Image.open(out) as im:
+        assert im.width > 500 and im.height > 300
+    assert chords.main(["E7#5", "-o", str(out)]) == 1
+    assert chords.main(["G=3 2 0 0 0 3", "--tuning", "D A D G B", "-o", str(out)]) == 1
+    assert chords.main(["D=x x 0 2 3 2", "--tuning", "D2 A2 D3 G3 B3 E4", "-o", str(out)]) == 0
+
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__, "-q", "-p", "no:cacheprovider"]))

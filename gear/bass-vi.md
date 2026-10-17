@@ -105,6 +105,37 @@ skill's `diagram.py`).
 - Tuning: use the TU-3S's **Chromatic** mode (`gear/boss-tuner.md`) and tune
   one octave below guitar.
 
+## Chord shapes
+
+Chord shapes are the same as on a guitar, but they sound an octave lower.
+Intervals get muddier the lower they are, so even a power chord's 5th
+(E1–B1 on the open low string) can blur here. Keep the root alone at the
+bottom, put the other notes on the higher strings, and play higher up the
+neck. *General music theory, not from Fender's docs.*
+Draw any set of shapes, with tab and a muddiness check, using the skill's
+`chords.py`:
+
+```
+uv run .github/skills/music-setup/scripts/chords.py "E7#5=x 7 x 7 9 8" "A7#5=x 0 x 0 2 1" --instrument bass-vi
+```
+
+Augmented 7ths (7♯5 = root, 3, ♯5, ♭7) that pass the muddiness check, root on
+the A string (movable: `x k x k k+2 k+1`):
+
+```
+       E  A  D  G  B  E   (low string first; x = don't play, 0 = open)
+A7#5   x  0  x  0  2  1
+B7#5   x  2  x  2  4  3
+C7#5   x  3  x  3  5  4
+D7#5   x  5  x  5  7  6
+E7#5   x  7  x  7  9  8
+G7#5   x  10 x  10 12 11
+```
+
+The open E7♯5 (`0 x 0 1 1 0`) and the low G7♯5 (`3 x 3 4 4 x`) and D7♯5
+(`x x 0 3 1 2`) shapes work on guitar but get muddy on this bass. Try a 7♯5
+going into the minor chord a 4th up: E7♯5 → Am, A7♯5 → Dm, B7♯5 → Em.
+
 ## Getting a guitar-like tone
 
 When the Bass VI sounds too bassy through the rig, work along the chain
